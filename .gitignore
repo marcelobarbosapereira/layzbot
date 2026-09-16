@@ -1,2 +1,11 @@
 .worktrees/
 .superpowers/
+.env*
+!.env.example
+*.pfx
+*.p12
+playwright/.auth/
+downloads/
+artifacts/
+.next/
+node_modules/
