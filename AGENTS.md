@@ -4,6 +4,8 @@
 
 This project is implemented across repeated Codex usage windows. Treat every completed plan task as a durable checkpoint.
 
+Default to the most automated safe execution path. For approved implementation plans, use Superpowers Subagent-Driven Development with an isolated worktree, a fresh implementer per task, task-scoped review, fix/re-review loops, and a final whole-branch review. Do not pause between plan tasks unless a safety boundary, external side effect, broken plan, or window checkpoint requires it.
+
 ### Continuation command
 
 When the user says **“pode continuar a implementação”**:
@@ -44,4 +46,3 @@ Every completed task must end with:
 - The next incomplete plan task identified.
 
 Do not push commits, deploy, or perform real fiscal transmissions unless the user has separately authorized that external action.
-
