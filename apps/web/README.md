@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LazyBot web
 
-## Getting Started
+Run commands from the repository root unless indicated otherwise.
 
-First, run the development server:
+## Local setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. Install Node.js, pnpm, and Docker Desktop (or a compatible Docker runtime), then start Docker.
+2. Run `pnpm install` and `pnpm dlx supabase start`.
+3. Copy the root `.env.example` to `apps/web/.env.local`. Set the public URL and publishable key reported by the local Supabase CLI. Never put a `service_role` key in these variables.
+4. Run `pnpm dlx supabase db reset` to apply migrations to the disposable local database. This clears local database data.
+5. Open local Supabase Studio at `http://127.0.0.1:54323` and create a test user under Authentication / Users. Use fabricated credentials only.
+6. Run `pnpm --dir apps/web dev`, then sign in at `http://localhost:3000/login`.
+
+The root route is inside the authenticated `(app)` layout. Server-side `getUser()` verifies identity; the Node.js proxy refreshes sessions and forwards cookie and cache headers. Future data mutations must also verify authentication and rely on database RLS; a layout alone does not authorize Server Actions.
+
+## Checks
+
+```powershell
+pnpm dlx supabase test db
+pnpm test
+pnpm lint
+pnpm typecheck
+pnpm build
+git diff --check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If route files have moved since the previous build, regenerate Next.js route types with `pnpm --dir apps/web exec next typegen` before running typecheck.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The SQL tests run inside a transaction and use fabricated identities and documents. They require the local stack; the Vitest auth tests replace the external auth boundary and do not prove a live Supabase login.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See the [Supabase SSR guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client) for the cookie refresh flow.
