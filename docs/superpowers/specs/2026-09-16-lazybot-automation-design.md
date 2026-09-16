@@ -456,6 +456,80 @@ O MVP estará concluído quando:
 9. Homologação acompanhada no portal real.
 10. Downloads, Storage, pastas locais, retomada e relatório final.
 
+## Desenvolvimento em janelas do Codex
+
+O plano de implementação deve considerar uma janela máxima de cinco horas por ciclo de trabalho do Codex. O projeto será desenvolvido de forma prolongada por meio de ciclos independentes, verificáveis e retomáveis, sem depender da continuidade de uma única sessão.
+
+### Tamanho dos ciclos
+
+- Cada ciclo terá um objetivo técnico principal e critérios de entrada e saída explícitos.
+- O trabalho planejado deve ocupar no máximo cerca de quatro horas da janela. O tempo restante será reservado para testes, revisão, documentação e checkpoint.
+- Um ciclo não combinará duas mudanças de alto risco, como alterar o esquema do banco e automatizar uma transmissão fiscal real.
+- Quando uma etapa for maior que uma janela, ela será dividida por contrato ou fronteira de componente, nunca interrompida em um estado parcialmente funcional.
+- Provas de viabilidade serão separadas da implementação definitiva e terão resultados documentados.
+
+### Checkpoint obrigatório
+
+Todo ciclo deverá terminar com:
+
+1. Árvore de trabalho inspecionada e alterações intencionais identificadas.
+2. Testes proporcionais ao risco executados.
+3. Build ou verificação estática executada quando aplicável.
+4. Migrações e contratos em estado consistente.
+5. Documentação de decisões ou limitações atualizada.
+6. Commit pequeno e descritivo.
+7. Registro do que foi concluído, como verificar e qual é o próximo passo.
+
+Nenhum checkpoint poderá deixar:
+
+- Migração aplicada sem código compatível.
+- Contrato do agente alterado em apenas um dos lados.
+- Transmissão fiscal iniciada sem estado persistido.
+- Segredo em arquivo temporário, log ou repositório.
+- Teste desabilitado sem justificativa registrada.
+- Código dependente de uma ação manual não documentada.
+
+### Retomada entre janelas
+
+Cada ciclo começará pela leitura do plano, do último checkpoint, do estado do Git e dos testes relevantes. A retomada não dependerá da memória da conversa anterior.
+
+O plano de implementação detalhado deverá especificar para cada tarefa:
+
+- Objetivo e motivo.
+- Arquivos que serão criados ou alterados.
+- Dependências e pré-condições.
+- Teste que falhará antes da implementação, quando aplicável.
+- Comandos de verificação.
+- Estado final esperado.
+- Commit sugerido.
+- Próxima tarefa desbloqueada.
+
+### Fatias previstas
+
+As seguintes fatias serão planejadas para caber individualmente em uma janela:
+
+1. Fundação do monorepo e ferramentas de qualidade.
+2. Projeto Supabase local, esquema inicial e autenticação.
+3. RLS e Storage privado com testes de políticas.
+4. Importação e validação do Excel.
+5. Interface tabular de cadastros.
+6. Competências e apurações mensais.
+7. Confirmação imutável de lotes.
+8. Fila, reivindicação atômica e progresso em tempo real.
+9. Protocolo e simulador do agente.
+10. Agente executável no Windows.
+11. Agente executável no Arch Linux.
+12. Prova de viabilidade do certificado A1 no Windows.
+13. Prova de viabilidade do certificado A1 no Arch Linux.
+14. Adaptador simulado do PGDAS-D.
+15. Navegação real até a etapa anterior à transmissão.
+16. Transmissão real acompanhada de uma empresa.
+17. Download, validação e armazenamento de documentos.
+18. Retomada, tolerância a falhas e relatório final.
+19. Verificação completa do MVP nos dois sistemas.
+
+As fatias poderão ser subdivididas durante o plano detalhado se a estimativa, o risco ou a verificação não couberem com margem na janela.
+
 ## Riscos e mitigação
 
 - **Mudanças no portal:** adaptador isolado, seletores semânticos, capturas sanitizadas e testes de contrato.
@@ -465,4 +539,3 @@ O MVP estará concluído quando:
 - **Exposição de dados:** certificados locais, RLS, bucket privado e logs sanitizados.
 - **Queda do executor:** heartbeat, checkpoints e retomada explícita.
 - **Dados mensais incorretos:** fotografia imutável do lote, validação e confirmação única com resumo.
-
