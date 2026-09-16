@@ -493,6 +493,10 @@ Nenhum checkpoint poderá deixar:
 
 Cada ciclo começará pela leitura do plano, do último checkpoint, do estado do Git e dos testes relevantes. A retomada não dependerá da memória da conversa anterior.
 
+A frase **“pode continuar a implementação”** autoriza a retomada do primeiro passo incompleto da tarefa ativa. Na retomada, o agente deve inspecionar `AGENTS.md`, a especificação, o plano ativo, `docs/progress.md`, o estado do Git e os últimos commits antes de executar qualquer alteração.
+
+Quando o consumo estimado da janela atingir aproximadamente 75%, nenhuma nova tarefa será iniciada. Se atingir 90% ou mais, o agente concluirá o próximo passo atômico seguro, executará as verificações possíveis, registrará o ponto exato de retomada e avisará o usuário. A prioridade continua sendo terminar e verificar a tarefa ativa antes da pausa.
+
 O plano de implementação detalhado deverá especificar para cada tarefa:
 
 - Objetivo e motivo.
