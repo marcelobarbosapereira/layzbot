@@ -76,9 +76,9 @@
 - Fresh application checks pass with the repository-compatible Corepack pnpm 10 invocation: focused tests 16/16, workspace tests 42/42 (39 web + 3 contracts), lint, typecheck, build (including dynamic `/simples`), and `git diff --check`.
 - The Playwright scenario is implemented and covers local sign-in, creation of two competences, two revenue edits, reload persistence, and preservation of the prior competence. Without `LAZYBOT_E2E_EMAIL` and `LAZYBOT_E2E_PASSWORD`, the fresh run reported 1 skipped; no live browser/auth persistence is claimed.
 - Review fix: the grid now exposes `Salvando…`/`Salvo` around the asynchronous mutation, and the Playwright scenario waits for two server-confirmed `Salvo` states before reloading. The scoped re-review marked the race addressed with no new Critical or Important findings.
-- Required local database commands remain infrastructure-blocked. Both `corepack pnpm dlx supabase db reset` and `corepack pnpm dlx supabase test db` stopped in pnpm's temporary dlx cache with `ENOENT ... node_modules/supabase/package.json`, before reaching PostgreSQL; Docker/local Supabase also remains unavailable from prior tasks. No SQL GREEN is claimed.
+- The hosted project is now the database reference. Rollback-only remote pgTAP bundles are the required SQL gate; `db reset` is not used against the hosted project. The local Docker/Supabase CLI is optional and no longer blocks completion.
 - All identifiers in tests are fabricated. No secrets, deployment, push, permanent remote change, or fiscal transmission occurred.
-- Exact next step: repair the local Supabase CLI/Docker runtime, configure a fabricated local test user in `LAZYBOT_E2E_EMAIL`/`LAZYBOT_E2E_PASSWORD`, run `corepack pnpm dlx supabase db reset`, `corepack pnpm dlx supabase test db`, start the web app, and rerun `corepack pnpm --dir apps/web exec playwright test e2e/monthly-assessments.spec.ts`. After that first-plan live gate, continue with `docs/superpowers/plans/2026-09-16-lazybot-02-orchestration.md`.
+- Exact next step: configure a fabricated hosted test user in `LAZYBOT_E2E_EMAIL`/`LAZYBOT_E2E_PASSWORD`, start the web app with the hosted project URL/key, and run `corepack pnpm --dir apps/web exec playwright test e2e/monthly-assessments.spec.ts`. After that hosted live gate, continue with `docs/superpowers/plans/2026-09-16-lazybot-02-orchestration.md`.
 
 ## 2026-09-17 — Scope ruling: hosted Supabase homologation
 
@@ -86,3 +86,4 @@
 - Hosted SQL validation must use fabricated identities/data and rollback-only transactions. `db reset` is explicitly prohibited against the hosted project unless separately authorized.
 - The hosted project is the target for live Auth/Playwright verification; local Supabase remains optional tooling rather than a completion blocker.
 - Updated `.env.example`, `apps/web/README.md`, and the Plan 1 completion gate to reflect this scope. No hosted migration or persistent data change was performed by this documentation/configuration change.
+- Hosted reference check (read-only, 2026-09-17): `current_database=postgres`, `current_user=postgres`, and `responsibles_present=false`, `assessments_present=false`, `import_previews_present=false`, `commit_rpc_present=false`, `fiscal_bucket_present=false`. The empty state confirms prior remote validation transactions left no persistent test state.
