@@ -52,6 +52,7 @@ export function AssessmentGrid({
     Object.fromEntries(initialRows.map((row) => [row.id, formatRevenue(row.revenueCents)])),
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saveStates, setSaveStates] = useState<Record<string, 'saving' | 'saved'>>({});
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set());
   const [companyFilter, setCompanyFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -65,10 +66,16 @@ export function AssessmentGrid({
   async function persist(row: AssessmentRow, revenue: string, selected = row.selected) {
     if (parseBrazilianCents(revenue) === null) {
       setErrors((current) => ({ ...current, [row.id]: 'Receita inválida' }));
+      setSaveStates((current) => {
+        const next = { ...current };
+        delete next[row.id];
+        return next;
+      });
       return;
     }
 
     setErrors((current) => ({ ...current, [row.id]: '' }));
+    setSaveStates((current) => ({ ...current, [row.id]: 'saving' }));
     const result = await onUpdate({
       assessmentId: row.id,
       profileId: row.profileId,
@@ -78,6 +85,11 @@ export function AssessmentGrid({
     });
     if (result.status !== 'success') {
       setErrors((current) => ({ ...current, [row.id]: result.message }));
+      setSaveStates((current) => {
+        const next = { ...current };
+        delete next[row.id];
+        return next;
+      });
       return;
     }
 
@@ -85,6 +97,7 @@ export function AssessmentGrid({
     setRows((current) => current.map((candidate) => candidate.id === row.id
       ? { ...candidate, revenueCents: cents, selected, version: result.version }
       : candidate));
+    setSaveStates((current) => ({ ...current, [row.id]: 'saved' }));
   }
 
   async function pasteRevenues(event: ClipboardEvent<HTMLInputElement>, startRow: AssessmentRow) {
@@ -159,6 +172,11 @@ export function AssessmentGrid({
             onPaste={(event) => void pasteRevenues(event, row)}
           />
           {errors[row.id] ? <span role="alert">{errors[row.id]}</span> : null}
+          {saveStates[row.id] ? (
+            <span role="status" aria-label={`Salvamento de ${row.companyName}`}>
+              {saveStates[row.id] === 'saving' ? 'Salvando…' : 'Salvo'}
+            </span>
+          ) : null}
         </span>
       ),
     },

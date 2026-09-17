@@ -101,3 +101,21 @@ it('pastes tab-separated revenues into matching visible rows only', async () => 
   expect(within(grid).getByDisplayValue('1.234,56')).toBeVisible();
   expect(within(grid).getByDisplayValue('2.345,67')).toBeVisible();
 });
+
+it('announces a saved revenue only after persistence completes', async () => {
+  let finishUpdate!: (result: { status: 'success'; version: number }) => void;
+  const update = vi.fn().mockReturnValue(new Promise((resolve) => { finishUpdate = resolve; }));
+  render(<AssessmentGrid rows={rows} competence="2026-08" onUpdate={update} />);
+
+  const revenue = screen.getByRole('textbox', { name: 'Receita de Empresa Visível Um' });
+  fireEvent.change(revenue, { target: { value: '444,44' } });
+  fireEvent.blur(revenue);
+
+  expect(screen.getByRole('status', { name: 'Salvamento de Empresa Visível Um' }))
+    .toHaveTextContent('Salvando…');
+  expect(screen.queryByText('Salvo')).not.toBeInTheDocument();
+
+  finishUpdate({ status: 'success', version: 2 });
+  await waitFor(() => expect(screen.getByRole('status', { name: 'Salvamento de Empresa Visível Um' }))
+    .toHaveTextContent('Salvo'));
+});

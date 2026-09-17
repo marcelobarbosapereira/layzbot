@@ -33,6 +33,7 @@ test('creates a competence and persists two revenues without changing the previo
   await currentRevenues.nth(1).press('Tab');
   await expect(currentRevenues.nth(0)).toHaveValue('1.234,56');
   await expect(currentRevenues.nth(1)).toHaveValue('2.345,67');
+  await expect(page.getByText('Salvo', { exact: true })).toHaveCount(2);
 
   await page.reload();
   await expect(page.locator('input[aria-label^="Receita de "]').nth(0)).toHaveValue('1.234,56');
