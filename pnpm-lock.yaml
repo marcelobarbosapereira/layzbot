@@ -72,6 +72,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      vitest:
+        specifier: ^5.0.1
+        version: 5.0.1(@types/node@20.19.43)(jsdom@30.0.1)(vite@8.3.0(@types/node@20.19.43))
 
 packages:
 
@@ -3214,7 +3217,7 @@ snapshots:
   '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
     optional: true
 
-  '@vitest/mocker@5.0.1(vite@8.3.0(@types/node@20.19.43))':
+  '@vitest/mocker@5.0.1(vite@8.3.0)':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.1
@@ -4892,7 +4895,7 @@ snapshots:
   vitest@5.0.1(@types/node@20.19.43)(jsdom@30.0.1)(vite@8.3.0(@types/node@20.19.43)):
     dependencies:
       '@types/chai': 5.2.3
-      '@vitest/mocker': 5.0.1(vite@8.3.0(@types/node@20.19.43))
+      '@vitest/mocker': 5.0.1(vite@8.3.0)
       chai: 6.2.2
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
