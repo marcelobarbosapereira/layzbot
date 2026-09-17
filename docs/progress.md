@@ -79,3 +79,10 @@
 - Required local database commands remain infrastructure-blocked. Both `corepack pnpm dlx supabase db reset` and `corepack pnpm dlx supabase test db` stopped in pnpm's temporary dlx cache with `ENOENT ... node_modules/supabase/package.json`, before reaching PostgreSQL; Docker/local Supabase also remains unavailable from prior tasks. No SQL GREEN is claimed.
 - All identifiers in tests are fabricated. No secrets, deployment, push, permanent remote change, or fiscal transmission occurred.
 - Exact next step: repair the local Supabase CLI/Docker runtime, configure a fabricated local test user in `LAZYBOT_E2E_EMAIL`/`LAZYBOT_E2E_PASSWORD`, run `corepack pnpm dlx supabase db reset`, `corepack pnpm dlx supabase test db`, start the web app, and rerun `corepack pnpm --dir apps/web exec playwright test e2e/monthly-assessments.spec.ts`. After that first-plan live gate, continue with `docs/superpowers/plans/2026-09-16-lazybot-02-orchestration.md`.
+
+## 2026-09-17 — Scope ruling: hosted Supabase homologation
+
+- The project scope now treats Supabase as the hosted project `wfkvddqecvkxffdeikyw` (`https://wfkvddqecvkxffdeikyw.supabase.co`), not as a required local Docker service.
+- Hosted SQL validation must use fabricated identities/data and rollback-only transactions. `db reset` is explicitly prohibited against the hosted project unless separately authorized.
+- The hosted project is the target for live Auth/Playwright verification; local Supabase remains optional tooling rather than a completion blocker.
+- Updated `.env.example`, `apps/web/README.md`, and the Plan 1 completion gate to reflect this scope. No hosted migration or persistent data change was performed by this documentation/configuration change.

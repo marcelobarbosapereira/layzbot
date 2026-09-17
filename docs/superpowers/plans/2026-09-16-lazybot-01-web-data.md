@@ -19,6 +19,7 @@
 - Use Next.js Node.js runtime by default; do not opt into Edge runtime.
 - Keep the original workbook read-only; import from it but never overwrite it.
 - All exposed Supabase tables and Storage objects require RLS.
+- Supabase is hosted for this project. The homologation target is project `wfkvddqecvkxffdeikyw` (`https://wfkvddqecvkxffdeikyw.supabase.co`); local Docker/CLI is optional tooling, not a completion gate. Hosted SQL validation must use fabricated data, explicit transaction boundaries, and rollback unless the user separately authorizes a persistent migration.
 - Finish every task with a clean checkpoint recorded in `docs/progress.md`.
 
 ## File Map
@@ -537,4 +538,4 @@ git commit -m "feat: add monthly Simples assessment grid"
 
 ## Plan Completion Gate
 
-Before starting Plan 2, verify that a clean clone can start Supabase, sign in, import the sanitized workbook, create a competence, edit revenue, and pass all commands from Task 5 Step 7.
+Before starting Plan 2, verify against the hosted homologation project that a clean clone can sign in, import the sanitized workbook, create a competence, edit revenue, and pass the application checks plus the rollback-only hosted SQL suites. A local Supabase stack is optional and is not a blocker for this gate.

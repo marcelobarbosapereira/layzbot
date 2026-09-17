@@ -2,14 +2,13 @@
 
 Run commands from the repository root unless indicated otherwise.
 
-## Local setup
+## Hosted Supabase setup
 
-1. Install Node.js, pnpm, and Docker Desktop (or a compatible Docker runtime), then start Docker.
-2. Run `pnpm install` and `pnpm dlx supabase start`.
-3. Copy the root `.env.example` to `apps/web/.env.local`. Set the public URL and publishable key reported by the local Supabase CLI. Never put a `service_role` key in these variables.
-4. Run `pnpm dlx supabase db reset` to apply migrations to the disposable local database. This clears local database data.
-5. Open local Supabase Studio at `http://127.0.0.1:54323` and create a test user under Authentication / Users. Use fabricated credentials only.
-6. Run `pnpm --dir apps/web dev`, then sign in at `http://localhost:3000/login`.
+1. Use the hosted project `wfkvddqecvkxffdeikyw` in the Supabase dashboard.
+2. Copy the root `.env.example` to `apps/web/.env.local` and fill the publishable key from Project Settings → API. Never put a `service_role` key in these variables.
+3. Apply migrations through the hosted SQL Editor or an explicitly targeted Supabase migration command. Do not run `db reset` against the hosted project.
+4. Create only fabricated homologation users and taxpayer data in the hosted project. Rollback-only pgTAP bundles must end with `ROLLBACK`; never use production taxpayer data in tests.
+5. Configure `LAZYBOT_E2E_EMAIL` and `LAZYBOT_E2E_PASSWORD` with a fabricated hosted test user, then run `pnpm --dir apps/web dev` and sign in at `http://localhost:3000/login`.
 
 The root route is inside the authenticated `(app)` layout. Server-side `getUser()` verifies identity; the Node.js proxy refreshes sessions and forwards cookie and cache headers. Future data mutations must also verify authentication and rely on database RLS; a layout alone does not authorize Server Actions.
 
@@ -26,6 +25,6 @@ git diff --check
 
 If route files have moved since the previous build, regenerate Next.js route types with `pnpm --dir apps/web exec next typegen` before running typecheck.
 
-The SQL tests run inside a transaction and use fabricated identities and documents. They require the local stack; the Vitest auth tests replace the external auth boundary and do not prove a live Supabase login.
+The SQL tests run inside a rollback-only transaction against the hosted project and use fabricated identities and documents. The Vitest auth tests replace the external auth boundary; the hosted Playwright scenario is the live login/persistence gate.
 
 See the [Supabase SSR guide](https://supabase.com/docs/guides/auth/server-side/creating-a-client) for the cookie refresh flow.
