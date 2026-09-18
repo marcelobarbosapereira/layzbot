@@ -3,8 +3,17 @@ export { confirmBatchInput, batchSummary } from './batch';
 export type { ConfirmBatchInput, BatchSummary, ConfirmBatchResult } from './batch';
 export { artifact } from './artifact';
 export type { Artifact } from './artifact';
-export { agentEnrollment, agentHeartbeat, certificateMetadata, deviceHeartbeatStatus } from './agent-api';
-export type { AgentEnrollment, AgentHeartbeat, DeviceHeartbeatStatus } from './agent-api';
+export {
+  agentEnrollment,
+  agentHeartbeat,
+  agentJobClaim,
+  agentJobEvent,
+  agentJobState,
+  agentJobTerminal,
+  certificateMetadata,
+  deviceHeartbeatStatus,
+} from './agent-api';
+export type { AgentEnrollment, AgentHeartbeat, AgentJobEvent, AgentJobTerminal, DeviceHeartbeatStatus } from './agent-api';
 
 export { importObligation, importRow, simpleActivity } from './import';
 export type {

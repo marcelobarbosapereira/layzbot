@@ -27,6 +27,31 @@ export const deviceHeartbeatStatus = z.object({
   lastSeenAt: z.iso.datetime({ offset: true }),
 });
 
+export const agentJobState = z.enum([
+  'authenticating',
+  'transmitting',
+  'awaiting_result',
+  'completed',
+  'interrupted',
+]);
+
+export const agentJobClaim = z.object({}).strict();
+
+export const agentJobEvent = z.object({
+  expectedState: agentJobState,
+  nextState: agentJobState,
+  message: z.string().trim().min(1).max(1000),
+  sequence: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+});
+
+export const agentJobTerminal = z.object({
+  expectedState: agentJobState,
+  message: z.string().trim().min(1).max(1000),
+  sequence: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+});
+
 export type AgentHeartbeat = z.infer<typeof agentHeartbeat>;
 export type AgentEnrollment = z.infer<typeof agentEnrollment>;
 export type DeviceHeartbeatStatus = z.infer<typeof deviceHeartbeatStatus>;
+export type AgentJobEvent = z.infer<typeof agentJobEvent>;
+export type AgentJobTerminal = z.infer<typeof agentJobTerminal>;

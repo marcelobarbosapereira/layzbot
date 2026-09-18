@@ -113,3 +113,13 @@
 - No hosted reset, persistent migration/data, push, deployment, fiscal transmission or service-role use occurred.
 - Commit to be created after controller inspection: `feat: authenticate and monitor executor devices`.
 - Next incomplete plan task: Task 8 — Atomic Item Claiming, Leases, and Events.
+
+## 2026-09-18 — Orchestration plan, Task 8 completed
+
+- Implemented atomic assigned-device claiming with `FOR UPDATE SKIP LOCKED`, 90-second renewable leases, terminal lease expiration, append-only ordered events, idempotent replay, validated execution-state transitions, and versioned claim/event/complete/interrupt Route Handlers.
+- Hardened the Data API boundary beyond UUID-only identification: claim and event RPCs require the server-peppered device token hash, validate the active device and composite owner relationship, use security-definer functions with an empty search path, and expose no raw token or service-role credential.
+- TDD evidence: four route suites first failed because their production modules did not exist, then passed 6/6. SQL tests preceded the migration. The first hosted run exposed a fabricated-fixture uniqueness conflict; using a second fabricated taxpayer corrected the test without weakening production constraints.
+- Hosted rollback-only validation on `wfkvddqecvkxffdeikyw` passed pgTAP 29/29. Cleanup checks confirmed the event table, all lease columns, both RPCs, and fabricated users were absent after rollback.
+- Local Supabase execution remains unavailable. The hosted SQL Editor cannot run two independent connections inside one outer rollback transaction, so simultaneous-session stress is not claimed; the suite exercises competing claims sequentially and verifies exactly one claim, while the function implements the atomic locking statement directly.
+- Fresh final local verification passed: workspace tests 73/73 (70 web, 3 contracts), lint, typecheck, production build, `git diff --check`, and static pgTAP count 29/29. No hosted reset, permanent migration/data, service-role use, push, deployment, or fiscal transmission occurred.
+- Next incomplete plan task: Task 9 — Realtime Progress, Intervention, and Explicit Reassignment.
