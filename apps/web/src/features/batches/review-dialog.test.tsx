@@ -38,8 +38,16 @@ it('shows blocked rows and prevents confirmation', () => {
 });
 it('does not preselect a recently successful offline device', () => {
   render(<BatchReviewDialog competence="2026-09" rows={rows} devices={[{ ...devices[0], online: false }, devices[1]]} />);
-  expect(screen.getByLabelText('Dispositivo executor')).toHaveValue(devices[1].id);
+  expect(screen.getByLabelText('Dispositivo executor')).toHaveValue('');
   expect(screen.getByRole('option', { name: /offline/ })).toBeDisabled();
+});
+
+it('requires an explicit selection when online devices have never succeeded', () => {
+  render(<BatchReviewDialog competence="2026-09" rows={rows} devices={[{ ...devices[0], lastSuccessfulAt: null }]} />);
+  expect(screen.getByLabelText('Dispositivo executor')).toHaveValue('');
+  expect(screen.getByRole('button', { name: 'Confirmar e executar' })).toBeDisabled();
+  fireEvent.change(screen.getByLabelText('Dispositivo executor'), { target: { value: deviceId } });
+  expect(screen.getByRole('button', { name: 'Confirmar e executar' })).toBeEnabled();
 });
 
 it('allows retry after an action failure', async () => {

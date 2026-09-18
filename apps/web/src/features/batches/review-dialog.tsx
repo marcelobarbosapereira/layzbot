@@ -11,7 +11,7 @@ export function BatchReviewDialog({ competence, rows, devices, onConfirm = confi
   competence: string; rows: BatchReviewRow[]; devices: BatchReviewDevice[];
   onConfirm?: (input: ConfirmBatchInput) => Promise<ConfirmBatchResult>;
 }) {
-  const [deviceId, setDeviceId] = useState(() => [...devices].filter((device) => device.online)
+  const [deviceId, setDeviceId] = useState(() => [...devices].filter((device) => device.online && device.lastSuccessfulAt !== null)
     .sort((a, b) => (b.lastSuccessfulAt ?? '').localeCompare(a.lastSuccessfulAt ?? ''))[0]?.id ?? '');
   const [pending, setPending] = useState(false);
   const [result, setResult] = useState<ConfirmBatchResult | null>(null);
