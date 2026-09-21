@@ -13,3 +13,5 @@ Verification: RED observed before implementation; focused and agent tests 10/10;
 Next task: Task 12 — Playwright PFX authentication feasibility spike.
 
 Task 11: fix round 1 — addressed review findings for secure CLI prompting, OpenSSL metadata inspection, Windows ACL hardening, Secret Service newline handling, idempotent clear, and transactional cleanup. Agent tests 13/13 plus workspace lint/typecheck/build/diff-check passed.
+
+Task 11: fix round 2 — moved ACL hardening inside transactional cleanup, added CRLF normalization, and made missing Windows username an explicit configuration failure. Agent tests 15/15 plus workspace lint/typecheck/build/diff-check passed.
