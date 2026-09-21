@@ -142,3 +142,9 @@
 - Mounted device enrollment/revocation at `/dispositivos` and batch review from selected `/simples` rows, with homepage navigation to `/simples` and a link from successful confirmation to `/execucoes/[batchId]`. Device choice uses current certificate availability and last completed event.
 - Realtime progress now reconciles owner-scoped rows on subscribe/reconnect, merges by event ID, ignores stale overlapping snapshots, and refreshes device availability. The Playwright simulator waits for the source to go offline, then heartbeats the target immediately before selecting it.
 - Hosted rollback-only upgrade bundle passed pgTAP 22/22; `existing_event_backfilled=true` and `append_only_trigger_enabled=true`. Cleanup removed fabricated users `091`, `092`, `099` and migration objects after rollback. Fresh local checks passed: 83/83 workspace tests (78 web, 5 contracts), lint, typecheck and production build. Live Playwright remains skipped without disposable hosted credentials and explicit mutation opt-in.
+
+## 2026-09-21 — checkpoint before Plan 3 Task 10
+
+- Plan 2 Task 9 is complete and committed in `a701fd4` plus review-fix commit `a33819d`; the whole-branch review found no remaining Critical or Important findings.
+- Task 10 was intentionally deferred to the next five-hour window at the user's request. Partial uncommitted agent-runtime files are preserved in the local stash `wip: pause task 10 agent runtime for next window`; they were not included in a success commit.
+- Exact next step: restore the stash, finish Task 10 with independent tests/review, then commit `feat: add cross-platform executor runtime` only after verification.
