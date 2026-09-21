@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": { "lazybot-agent": "dist/src/cli/main.js" },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

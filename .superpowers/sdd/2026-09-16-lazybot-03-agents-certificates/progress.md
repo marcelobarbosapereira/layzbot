@@ -23,3 +23,9 @@ Verification: focused agent tests 19 passed / 1 skipped; workspace tests contrac
 Task 12: fix round 1 — implemented the Step 6 allowlisted HTTPS origin probe and strict CLI facade. Probe tests 23 passed / 1 skipped; it launches visibly by default, records only `{ origin, tlsAccepted }`, and rejects non-allowlisted origins before browser launch.
 
 Next task: Task 13 — enrollment and platform packaging.
+
+Task 13: complete. Added injectable one-time enrollment exchange, secret-backed device token loading, signal-aware runtime CLI, Windows/Arch packaging scripts and user startup artifacts, plus installation/removal documentation. Report: `.superpowers/sdd/2026-09-16-lazybot-03-agents-certificates-task13-report.md`.
+
+Verification: RED observed for the absent enrollment boundary; enrollment-focused tests 2/2; complete agent suite 25 passed / 1 skipped; agent typecheck/build and workspace tests, lint, typecheck, build, secret scan, and `git diff --check` passed. Windows/Arch installation and enrollment are unavailable on this host and are not claimed. No hosted mutation, real token/certificate, fiscal effect, or push was used.
+
+Next task: Plan 3 completion gate review; no further implementation task remains in the plan.

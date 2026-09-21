@@ -4,7 +4,7 @@ import { CertificateRegistry } from '../certificates/registry';
 
 export function createCertificateCli(registry: CertificateRegistry) {
   return {
-    async add(responsibleId: string, pfxPath: string, passphrase: string) { return registry.add({ responsibleId, pfxPath, passphrase }); },
+    async add(input: { responsibleId: string; pfxPath: string; passphrase: string }) { return registry.add(input); },
     async list() { return registry.list(); },
     async remove(id: string) { return registry.remove(id); },
   };

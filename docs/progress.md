@@ -143,6 +143,12 @@
 - Realtime progress now reconciles owner-scoped rows on subscribe/reconnect, merges by event ID, ignores stale overlapping snapshots, and refreshes device availability. The Playwright simulator waits for the source to go offline, then heartbeats the target immediately before selecting it.
 - Hosted rollback-only upgrade bundle passed pgTAP 22/22; `existing_event_backfilled=true` and `append_only_trigger_enabled=true`. Cleanup removed fabricated users `091`, `092`, `099` and migration objects after rollback. Fresh local checks passed: 83/83 workspace tests (78 web, 5 contracts), lint, typecheck and production build. Live Playwright remains skipped without disposable hosted credentials and explicit mutation opt-in.
 
+## 2026-09-21 — Plan 3 Tasks 10–13
+
+- Task 10 added the cross-platform executor runtime, typed HTTP client, configuration validation, lease-aware heartbeat/claim loop, and simulated adapter. Task 11 added injectable Windows DPAPI/Linux Secret Service providers and a user-only certificate registry. Task 12 added disposable mTLS fixtures, Playwright PFX options, zeroization, and an allowlisted TLS probe. These tasks have no real fiscal or certificate effects.
+- Task 13 added secure injectable enrollment and run commands, platform packaging scripts/artifacts, and [agent installation instructions](agent-installation.md). Enrollment exchanges a one-time token once, stores only the returned device token through `SecretProvider`, and excludes credentials from `agent.json`, logs, and command arguments.
+- Task 13 verification: agent tests 25 passed / 1 skipped, workspace tests passed, lint/typecheck/build passed, secret scan and `git diff --check` passed. Windows/Arch installation and enrollment are unavailable on this host; no platform success claim is made.
+
 ## 2026-09-21 — checkpoint before Plan 3 Task 10
 
 - Plan 2 Task 9 is complete and committed in `a701fd4` plus review-fix commit `a33819d`; the whole-branch review found no remaining Critical or Important findings.

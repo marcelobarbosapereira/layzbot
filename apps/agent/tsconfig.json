@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "strict": true,
+    "outDir": "dist",
+    "rootDir": ".",
     "noEmit": true,
     "target": "ES2022",
     "module": "ESNext",

@@ -1,0 +1,14 @@
+[Unit]
+Description=LazyBot user agent (manual web-confirmed simulated work)
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/lazybot-agent/lazybot-agent run
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=default.target
