@@ -27,8 +27,10 @@ export function createWindowsDpapiProvider(filePath = `${process.env.LOCALAPPDAT
 }
 
 export function secureWindowsFile(filePath: string): Promise<void> {
+  const username = process.env.USERNAME;
+  if (!username) return Promise.reject(new Error('SECRET_PROVIDER_CONFIGURATION'));
   return new Promise((resolve, reject) => {
-    const child = spawn('icacls.exe', [filePath, '/inheritance:r', '/grant:r', `${process.env.USERNAME ?? '*'}:(R,W)`], { windowsHide: true });
+    const child = spawn('icacls.exe', [filePath, '/inheritance:r', '/grant:r', `${username}:(R,W)`], { windowsHide: true });
     child.on('error', () => reject(new Error('SECRET_PROVIDER_UNAVAILABLE')));
     child.on('close', (code) => code === 0 ? resolve() : reject(new Error('SECRET_PROVIDER_ERROR')));
   });

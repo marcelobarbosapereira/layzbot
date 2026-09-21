@@ -12,10 +12,16 @@ function invoke(args: string[], input?: Uint8Array): Promise<Uint8Array> {
   });
 }
 
+export function normalizeSecretLookup(value: Uint8Array): Uint8Array {
+  const end = value.length && value[value.length - 1] === 10 ? value.length - 1 : value.length;
+  const trimmedEnd = end && value[end - 1] === 13 ? end - 1 : end;
+  return value.slice(0, trimmedEnd);
+}
+
 export function createLinuxSecretServiceProvider(): SecretProvider {
   return {
     async store(key, value) { await invoke(['store', '--label=LazyBot certificate secret', 'application', 'lazybot', 'key', key], value); },
-    async read(key) { const value = await invoke(['lookup', 'application', 'lazybot', 'key', key]); const bytes = value[value.length - 1] === 10 ? value.subarray(0, value.length - 1) : value; return bytes.length ? new Uint8Array(bytes) : null; },
+    async read(key) { const bytes = normalizeSecretLookup(await invoke(['lookup', 'application', 'lazybot', 'key', key])); return bytes.length ? bytes : null; },
     async delete(key) { await invoke(['clear', 'application', 'lazybot', 'key', key]).catch(() => undefined); },
   };
 }

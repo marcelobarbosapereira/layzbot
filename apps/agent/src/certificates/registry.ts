@@ -52,9 +52,9 @@ export class CertificateRegistry {
     const pfxFile = `${id}-${basename(input.pfxPath).replace(/[^a-zA-Z0-9._-]/g, '_')}`;
     await mkdir(this.dataDir, { recursive: true });
     const target = join(this.dataDir, pfxFile);
-    await copyFile(input.pfxPath, target); await chmod(target, 0o600); await this.options.secureFile?.(target);
+    await copyFile(input.pfxPath, target); await chmod(target, 0o600);
     let stored = false;
-    try { await this.secrets.store(`certificate/${id}`, new TextEncoder().encode(input.passphrase)); stored = true;
+    try { await this.options.secureFile?.(target); await this.secrets.store(`certificate/${id}`, new TextEncoder().encode(input.passphrase)); stored = true;
     const metadata = { id, responsibleId: input.responsibleId, subject: inspected.subject, fingerprint, expiresAt: inspected.expiresAt, pfxFile };
       await this.save([...items, metadata]); return metadata;
     } catch (error) { if (stored) await this.secrets.delete(`certificate/${id}`).catch(() => undefined); const { unlink } = await import('node:fs/promises'); await unlink(target).catch(() => undefined); throw error; }

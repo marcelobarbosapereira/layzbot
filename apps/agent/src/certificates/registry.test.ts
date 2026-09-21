@@ -47,6 +47,14 @@ describe('CertificateRegistry', () => {
     await expect((await import('node:fs/promises')).readdir(root)).resolves.toEqual(['fixture.pfx']);
   });
 
+  it('removes staged PFX when Windows ACL hardening fails', async () => {
+    const { root } = await setup();
+    const source = join(root, 'fixture.pfx'); await writeFile(source, pfx);
+    const registry = new CertificateRegistry(root, createInMemorySecretProvider(), async () => ({ subject: 'x', expiresAt: '2099-01-01T00:00:00.000Z' }), { secureFile: async () => { throw new Error('ACL_FAILED'); } });
+    await expect(registry.add({ responsibleId: 'r', pfxPath: source, passphrase: 'secret' })).rejects.toThrow('ACL_FAILED');
+    await expect((await import('node:fs/promises')).readdir(root)).resolves.toEqual(['fixture.pfx']);
+  });
+
   it('parses OpenSSL certificate metadata without putting the passphrase in arguments', async () => {
     const calls: { args: string[]; input?: Uint8Array }[] = [];
     const inspect = createOpenSslPfxInspector(async (args, input) => { calls.push({ args, input }); return 'subject=CN=Fictitious\nNot After : Jan  1 00:00:00 2099 GMT\n'; });
