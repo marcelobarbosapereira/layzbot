@@ -28,6 +28,7 @@ it('calls confirmation once while pending and remains confirmed after success', 
   expect(confirm).toHaveBeenCalledWith({ competence: '2026-09', deviceId, assessmentIds: [rows[0].id] });
   resolve({ status: 'success', summary: { batchId: deviceId, itemCount: 1, totalRevenueCents: 12345 } });
   await waitFor(() => expect(screen.getByText(/Lote confirmado/)).toBeInTheDocument());
+  expect(screen.getByRole('link', { name: 'Acompanhar execução' })).toHaveAttribute('href', `/execucoes/${deviceId}`);
   expect(button).toBeDisabled();
 });
 

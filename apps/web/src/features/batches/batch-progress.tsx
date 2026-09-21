@@ -3,17 +3,19 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { useEffect, useRef, useState, useTransition } from 'react';
 import { reassignBatchItems } from './reassign-action';
+import { refreshBatchProgress } from './refresh-action';
 
 export type BatchItemView = { id: string; batchId: string; taxpayerName: string; status: string; assignedDeviceId: string; leaseExpiresAt: string | null; artifacts: { id: string; name: string; url: string }[] };
 export type BatchEventView = { id: number; batchId: string; batchItemId: string; nextState: string; message: string; createdAt: string; actorUserId: string | null };
 type DeviceView = { id: string; name: string; online: boolean; revokedAt: string | null };
-type Subscribe = (batchId: string, onItem: (item: BatchItemView) => void, onEvent: (event: BatchEventView) => void) => () => void;
+type Subscribe = (batchId: string, onItem: (item: BatchItemView) => void, onEvent: (event: BatchEventView) => void, onConnected: () => void) => () => void;
+type Reconcile = (batchId: string) => Promise<{ items: BatchItemView[]; events: BatchEventView[]; devices: DeviceView[] } | null>;
 type Reassign = (input: { batchId: string; targetDeviceId: string }) => Promise<{ status: 'success'; reassignedCount: number } | { status: 'error'; message: string }>;
 
 const labels: Record<string, string> = { pending: 'Pendente', authenticating: 'Autenticando', transmitting: 'Em transmissão', awaiting_result: 'Aguardando resultado', submitted: 'Enviado', das_downloaded: 'DAS baixado', completed: 'Concluído', needs_attention: 'Precisa de atenção', failed: 'Falhou', interrupted: 'Interrompido' };
 const safeStates = new Set(['pending', 'needs_attention', 'failed', 'interrupted']);
 
-function defaultSubscribe(batchId: string, onItem: (item: BatchItemView) => void, onEvent: (event: BatchEventView) => void) {
+function defaultSubscribe(batchId: string, onItem: (item: BatchItemView) => void, onEvent: (event: BatchEventView) => void, onConnected: () => void) {
   const client = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
   const channel = client.channel(`batch-progress-${batchId}`)
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'batch_items', filter: `batch_id=eq.${batchId}` }, ({ new: row }) => {
@@ -22,36 +24,63 @@ function defaultSubscribe(batchId: string, onItem: (item: BatchItemView) => void
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'batch_item_events', filter: `batch_id=eq.${batchId}` }, ({ new: row }) => {
       onEvent({ id: Number(row.id), batchId: String(row.batch_id), batchItemId: String(row.batch_item_id), nextState: String(row.next_state), message: String(row.message), createdAt: String(row.created_at), actorUserId: typeof row.actor_user_id === 'string' ? row.actor_user_id : null });
     })
-    .subscribe();
+    .subscribe((status) => { if (status === 'SUBSCRIBED') onConnected(); });
   return () => { void client.removeChannel(channel); };
 }
 
-export function BatchProgress({ batch, initialItems, initialEvents, devices, subscribe = defaultSubscribe, onReassign = reassignBatchItems }: {
-  batch: { id: string; competence: string; deviceId: string }; initialItems: BatchItemView[]; initialEvents: BatchEventView[]; devices: DeviceView[]; subscribe?: Subscribe; onReassign?: Reassign;
+export function BatchProgress({ batch, initialItems, initialEvents, devices, subscribe = defaultSubscribe, reconcile = refreshBatchProgress, onReassign = reassignBatchItems }: {
+  batch: { id: string; competence: string; deviceId: string }; initialItems: BatchItemView[]; initialEvents: BatchEventView[]; devices: DeviceView[]; subscribe?: Subscribe; reconcile?: Reconcile; onReassign?: Reassign;
 }) {
   const [items, setItems] = useState(initialItems);
   const [events, setEvents] = useState(initialEvents);
+  const [knownDevices, setKnownDevices] = useState(devices);
   const [targetDeviceId, setTargetDeviceId] = useState('');
   const [notice, setNotice] = useState('');
   const [pending, startTransition] = useTransition();
   const latestEventIds = useRef(new Map(initialEvents.map((event) => [event.batchItemId, event.id] as const)));
-  useEffect(() => subscribe(batch.id,
-    (incoming) => setItems((current) => current.map((item) => item.id === incoming.id ? { ...item, ...incoming, assignedDeviceId: incoming.assignedDeviceId || item.assignedDeviceId, artifacts: item.artifacts } : item)),
+  const liveRevisions = useRef(new Map<string, number>());
+  const reconciliationGeneration = useRef(0);
+  useEffect(() => {
+    let active = true;
+    const unsubscribe = subscribe(batch.id,
+    (incoming) => {
+      liveRevisions.current.set(incoming.id, (liveRevisions.current.get(incoming.id) ?? 0) + 1);
+      setItems((current) => current.map((item) => item.id === incoming.id ? { ...item, ...incoming, assignedDeviceId: incoming.assignedDeviceId || item.assignedDeviceId, artifacts: item.artifacts } : item));
+    },
     (incoming) => {
       const latest = latestEventIds.current.get(incoming.batchItemId) ?? 0;
       if (incoming.id <= latest) return;
       latestEventIds.current.set(incoming.batchItemId, incoming.id);
+      liveRevisions.current.set(incoming.batchItemId, (liveRevisions.current.get(incoming.batchItemId) ?? 0) + 1);
       setEvents((current) => [...current, incoming]);
       setItems((current) => current.map((item) => item.id === incoming.batchItemId ? { ...item, status: incoming.nextState } : item));
     },
-  ), [batch.id, subscribe]);
+    () => {
+      const generation = ++reconciliationGeneration.current;
+      const before = new Map(liveRevisions.current);
+      void reconcile(batch.id).then((snapshot) => {
+        if (!active || !snapshot || generation !== reconciliationGeneration.current) return;
+        setItems((current) => snapshot.items.map((fresh) =>
+          (liveRevisions.current.get(fresh.id) ?? 0) === (before.get(fresh.id) ?? 0)
+            ? fresh : current.find((item) => item.id === fresh.id) ?? fresh));
+        setEvents((current) => {
+          const byId = new Map(current.map((event) => [event.id, event]));
+          for (const event of snapshot.events) byId.set(event.id, event);
+          return [...byId.values()].sort((a, b) => a.id - b.id);
+        });
+        for (const event of snapshot.events) latestEventIds.current.set(event.batchItemId, Math.max(event.id, latestEventIds.current.get(event.batchItemId) ?? 0));
+        setKnownDevices(snapshot.devices);
+      }).catch(() => { if (active && generation === reconciliationGeneration.current) setNotice('Conexão restabelecida; não foi possível atualizar o progresso.'); });
+    });
+    return () => { active = false; unsubscribe(); };
+  }, [batch.id, subscribe, reconcile]);
   const count = (status: string) => items.filter((item) => item.status === status).length;
   const eligible = items.filter((item) => safeStates.has(item.status));
   const canReassign = eligible.some((item) => {
-    const current = devices.find((device) => device.id === item.assignedDeviceId);
+    const current = knownDevices.find((device) => device.id === item.assignedDeviceId);
     return current != null && (!current.online || current.revokedAt !== null);
   });
-  const targetDevices = devices.filter((device) => device.online && !device.revokedAt);
+  const targetDevices = knownDevices.filter((device) => device.online && !device.revokedAt);
   return <section aria-label={`Execução ${batch.competence}`}>
     <h1>Execução {batch.competence}</h1>
     <div aria-label="Progresso do lote">

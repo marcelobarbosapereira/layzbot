@@ -119,3 +119,11 @@ it('announces a saved revenue only after persistence completes', async () => {
   await waitFor(() => expect(screen.getByRole('status', { name: 'Salvamento de Empresa Visível Um' }))
     .toHaveTextContent('Salvo'));
 });
+
+it('opens batch review for the selected assessment with a live device', () => {
+  render(<AssessmentGrid rows={rows} competence="2026-08" devices={[{ id: '60000000-0000-4000-8000-000000000071', name: 'Executor', online: true, certificateAvailable: true, lastSuccessfulAt: null }]} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Revisar lote selecionado' }));
+  expect(screen.getByRole('dialog', { name: 'Revisar lote' })).toBeInTheDocument();
+  expect(screen.getByText('Empresa Visível Dois')).toBeInTheDocument();
+  expect(screen.getByRole('option', { name: 'Executor' })).toBeInTheDocument();
+});

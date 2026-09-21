@@ -9,6 +9,7 @@ import {
   type AssessmentMutationResult,
 } from './actions';
 import { parseBrazilianCents } from './revenue';
+import { BatchReviewDialog, type BatchReviewDevice } from '../batches/review-dialog';
 
 export type AssessmentRow = {
   id: string;
@@ -41,10 +42,12 @@ function maskDocument(document: string) {
 export function AssessmentGrid({
   rows: initialRows,
   competence,
+  devices = [],
   onUpdate = updateAssessment,
 }: {
   rows: AssessmentRow[];
   competence: string;
+  devices?: BatchReviewDevice[];
   onUpdate?: UpdateAction;
 }) {
   const [rows, setRows] = useState(initialRows);
@@ -56,6 +59,7 @@ export function AssessmentGrid({
   const [revealed, setRevealed] = useState<Set<string>>(() => new Set());
   const [companyFilter, setCompanyFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [reviewOpen, setReviewOpen] = useState(false);
 
   const visibleRows = useMemo(() => rows.filter((row) => {
     const companyMatches = row.companyName.toLocaleLowerCase('pt-BR')
@@ -198,6 +202,7 @@ export function AssessmentGrid({
 
   return (
     <section>
+      <button type="button" disabled={!rows.some((row) => row.selected)} onClick={() => setReviewOpen(true)}>Revisar lote selecionado</button>
       <div className="assessment-filters">
         <label>
           Filtrar empresas
@@ -221,6 +226,7 @@ export function AssessmentGrid({
         enableVirtualization={false}
         className="rdg-light assessment-grid"
       />
+      {reviewOpen && <BatchReviewDialog competence={competence} rows={rows.filter((row) => row.selected).map((row) => ({ id: row.id, companyName: row.companyName, revenueCents: row.revenueCents, responsible: row.responsible, blockedReason: null }))} devices={devices} onClose={() => setReviewOpen(false)} />}
     </section>
   );
 }

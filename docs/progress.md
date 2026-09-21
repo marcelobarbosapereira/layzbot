@@ -134,3 +134,11 @@
 - Playwright scenario uses an HTTP agent simulator for heartbeat, claim, progress, interruption, and explicit reassignment; it skips unless fabricated hosted credentials, disposable batch/device tokens, and mutation opt-in are present. The live browser flow was not exercised in this checkpoint.
 - Fresh local verification: 79/79 workspace tests (74 web, 5 contracts), lint, typecheck, production build including dynamic `/execucoes/[batchId]`, `git diff --check`, and static pgTAP count 19/19 passed. Playwright reported 1 skipped under the absent opt-in fixture credentials.
 - No service-role key, hosted reset, persistent hosted migration, deployment, push, or fiscal transmission occurred. Protocol remains `/api/agent/v1`; the next plan is `docs/superpowers/plans/2026-09-16-lazybot-03-agents-certificates.md`.
+
+### Task 9 whole-branch review fixes
+
+- Migration 007 now drops and recreates the append-only event trigger within the same migration transaction while backfilling `batch_id`; a hosted upgrade fixture with a preexisting event validates the backfill and restored trigger.
+- Explicit reassignment terminalizes expired active leases from offline/revoked source devices before selecting safe items. It still excludes `submitted`, `das_downloaded`, and `completed`; the expanded pgTAP suite covers both recovery and fiscal-effect preservation.
+- Mounted device enrollment/revocation at `/dispositivos` and batch review from selected `/simples` rows, with homepage navigation to `/simples` and a link from successful confirmation to `/execucoes/[batchId]`. Device choice uses current certificate availability and last completed event.
+- Realtime progress now reconciles owner-scoped rows on subscribe/reconnect, merges by event ID, ignores stale overlapping snapshots, and refreshes device availability. The Playwright simulator waits for the source to go offline, then heartbeats the target immediately before selecting it.
+- Hosted rollback-only upgrade bundle passed pgTAP 22/22; `existing_event_backfilled=true` and `append_only_trigger_enabled=true`. Cleanup removed fabricated users `091`, `092`, `099` and migration objects after rollback. Fresh local checks passed: 83/83 workspace tests (78 web, 5 contracts), lint, typecheck and production build. Live Playwright remains skipped without disposable hosted credentials and explicit mutation opt-in.

@@ -33,9 +33,11 @@ test('streams an agent interruption and explicitly reassigns the unfinished item
   await expect(page.getByText('Transmitindo pelo simulador')).toBeVisible();
   await agentPost(`/api/agent/v1/jobs/${itemId}/interrupt`, sourceToken!, { expectedState: 'transmitting', message: 'Interrupção de teste', sequence: 2 });
   await expect(page.getByText('Interrompidos: 1')).toBeVisible();
+  const heartbeatThresholdSeconds = Number(process.env.DEVICE_HEARTBEAT_THRESHOLD_SECONDS ?? '90');
+  await page.waitForTimeout((heartbeatThresholdSeconds + 1) * 1000);
   await agentPost('/api/agent/v1/heartbeat', targetToken!, heartbeat);
-  await page.waitForTimeout(91_000);
   await page.reload();
+  await expect(page.getByLabel('Novo dispositivo').locator(`option[value="${targetDeviceId}"]`)).toBeEnabled();
   await page.getByLabel('Novo dispositivo').selectOption(targetDeviceId!);
   await page.getByRole('button', { name: 'Reatribuir itens seguros' }).click();
   await expect(page.getByRole('status')).toContainText('itens reatribuídos');

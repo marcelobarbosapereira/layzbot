@@ -46,3 +46,32 @@ it('shows the intervention message and authorized document link on the affected 
   expect(screen.getByText(/Ação recomendada:/)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Evidência.png' })).toHaveAttribute('href', 'https://example.test/signed');
 });
+
+it('catches up scoped events after subscription and reconnection without duplicates', async () => {
+  let connected!: () => void;
+  let onEvent!: (event: BatchEventView) => void;
+  const first = item('60000000-0000-4000-8000-000000000001', 'pending');
+  const event: BatchEventView = { id: 11, batchId, batchItemId: first.id, nextState: 'interrupted', message: 'Conexão interrompida', createdAt: '2026-09-21T10:00:00Z', actorUserId: null };
+  const reconcile = vi.fn().mockResolvedValue({ items: [{ ...first, status: 'interrupted' }], events: [event], devices });
+  render(<BatchProgress batch={{ id: batchId, competence: '2026-09', deviceId: deviceA }} initialItems={[first]} initialEvents={[]} devices={devices}
+    subscribe={(_id, _item, receiveEvent, onConnected) => { onEvent = receiveEvent; connected = onConnected; return () => {}; }} reconcile={reconcile} />);
+  act(() => connected());
+  await waitFor(() => expect(screen.getByText('Interrompidos: 1')).toBeInTheDocument());
+  act(() => { onEvent(event); connected(); });
+  await waitFor(() => expect(reconcile).toHaveBeenCalledTimes(2));
+  expect(screen.getByRole('list', { name: 'Histórico de Empresa 01' }).querySelectorAll('li')).toHaveLength(1);
+  expect(reconcile).toHaveBeenCalledWith(batchId);
+});
+
+it('keeps the latest reconnect snapshot when an older request resolves later', async () => {
+  let connected!: () => void;
+  const resolvers: Array<(snapshot: { items: BatchItemView[]; events: BatchEventView[]; devices: typeof devices }) => void> = [];
+  const first = item('60000000-0000-4000-8000-000000000001', 'pending');
+  const reconcile = vi.fn(() => new Promise<{ items: BatchItemView[]; events: BatchEventView[]; devices: typeof devices }>((resolve) => resolvers.push(resolve)));
+  render(<BatchProgress batch={{ id: batchId, competence: '2026-09', deviceId: deviceA }} initialItems={[first]} initialEvents={[]} devices={devices}
+    subscribe={(_id, _item, _event, onConnected) => { connected = onConnected; return () => {}; }} reconcile={reconcile} />);
+  act(() => { connected(); connected(); });
+  await act(async () => resolvers[1]({ items: [{ ...first, status: 'completed' }], events: [], devices }));
+  await act(async () => resolvers[0]({ items: [first], events: [], devices }));
+  expect(screen.getByText('Concluídos: 1')).toBeInTheDocument();
+});

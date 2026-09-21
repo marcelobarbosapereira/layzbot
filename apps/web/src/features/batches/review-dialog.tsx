@@ -7,9 +7,10 @@ import { confirmBatch } from './actions';
 export type BatchReviewRow = { id: string; companyName: string; revenueCents: number | null; responsible: string; blockedReason: string | null };
 export type BatchReviewDevice = { id: string; name: string; online: boolean; certificateAvailable: boolean; lastSuccessfulAt: string | null };
 
-export function BatchReviewDialog({ competence, rows, devices, onConfirm = confirmBatch }: {
+export function BatchReviewDialog({ competence, rows, devices, onConfirm = confirmBatch, onClose }: {
   competence: string; rows: BatchReviewRow[]; devices: BatchReviewDevice[];
   onConfirm?: (input: ConfirmBatchInput) => Promise<ConfirmBatchResult>;
+  onClose?: () => void;
 }) {
   const [deviceId, setDeviceId] = useState(() => [...devices].filter((device) => device.online && device.lastSuccessfulAt !== null)
     .sort((a, b) => (b.lastSuccessfulAt ?? '').localeCompare(a.lastSuccessfulAt ?? ''))[0]?.id ?? '');
@@ -43,7 +44,9 @@ export function BatchReviewDialog({ competence, rows, devices, onConfirm = confi
     <p>{device?.certificateAvailable ? 'Certificado disponível' : 'Certificado indisponível'}</p>
     {result?.status === 'error' && <p role="alert">{result.message}</p>}
     {result?.status === 'success' && <p role="status">Lote confirmado: {result.summary.batchId}</p>}
+    {result?.status === 'success' && <a href={`/execucoes/${result.summary.batchId}`}>Acompanhar execução</a>}
     <button type="button" disabled={disabled} onClick={submit}>Confirmar e executar</button>
+    {onClose && <button type="button" onClick={onClose}>Fechar revisão</button>}
     {pending && <p role="status">Confirmando…</p>}
   </section>;
 }

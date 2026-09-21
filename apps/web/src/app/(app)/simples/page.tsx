@@ -1,6 +1,7 @@
 import { AssessmentGrid } from '../../../features/assessments/assessment-grid';
 import { CompetencePicker } from '../../../features/assessments/competence-picker';
 import { listAssessmentRows, listCompetences } from '../../../features/assessments/queries';
+import { listBatchReviewDevices } from '../../../features/batches/queries';
 
 const competencePattern = /^[0-9]{4}-(0[1-9]|1[0-2])$/;
 const obligationTabs = ['Simples', 'INSS', 'FGTS', 'GPS', 'eSocial', 'DCTF Web'];
@@ -17,15 +18,17 @@ export default async function SimplesPage({
 }) {
   const requested = (await searchParams).competence;
   const competence = requested && competencePattern.test(requested) ? requested : currentCompetence();
-  const [rows, knownCompetences] = await Promise.all([
+  const [rows, knownCompetences, devices] = await Promise.all([
     listAssessmentRows(competence),
     listCompetences(),
+    listBatchReviewDevices(),
   ]);
   const competences = [...new Set([competence, ...knownCompetences])];
 
   return (
     <main className="assessments-page">
       <h1>Apurações mensais</h1>
+      <p><a href="/dispositivos">Gerenciar dispositivos executores</a></p>
       <nav aria-label="Obrigações" className="obligation-tabs">
         {obligationTabs.map((tab) => tab === 'Simples' ? (
           <span key={tab} aria-current="page">{tab}</span>
@@ -37,7 +40,7 @@ export default async function SimplesPage({
       </nav>
       <CompetencePicker currentCompetence={competence} competences={competences} />
       {rows.length > 0 ? (
-        <AssessmentGrid rows={rows} competence={competence} />
+        <AssessmentGrid rows={rows} competence={competence} devices={devices} />
       ) : (
         <p>Nenhuma apuração nesta competência. Crie a competência para iniciar.</p>
       )}

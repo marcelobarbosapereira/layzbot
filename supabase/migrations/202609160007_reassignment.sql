@@ -19,7 +19,10 @@ $$;
 -- The batch ID lets Realtime filter event rows before delivering them.
 alter table public.batch_item_events add column batch_id uuid;
 alter table public.batch_item_events add column actor_user_id uuid references auth.users(id);
+drop trigger batch_item_events_append_only on public.batch_item_events;
 update public.batch_item_events e set batch_id=i.batch_id from public.batch_items i where i.id=e.batch_item_id;
+create trigger batch_item_events_append_only before update or delete on public.batch_item_events
+  for each row execute function private.protect_batch_item_event();
 alter table public.batch_item_events alter column batch_id set not null;
 alter table public.batch_item_events add foreign key (batch_id, owner_id) references public.batches(id, owner_id);
 create index batch_item_events_batch_idx on public.batch_item_events(batch_id, id);
@@ -152,8 +155,17 @@ begin
   perform 1 from public.devices d where d.owner_id=v_owner and d.id in (
     select coalesce(i.assigned_device_id,v_batch.device_id) from public.batch_items i
     where i.batch_id=p_batch_id and i.owner_id=v_owner
-      and i.status in ('pending','interrupted','failed','needs_attention')
+      and i.status in ('pending','interrupted','failed','needs_attention','authenticating','transmitting','awaiting_result')
   ) for share;
+  -- An expired lease is terminal before any explicit transfer; a live lease is never moved.
+  update public.batch_items i
+    set status='interrupted',lease_owner_device_id=null,lease_expires_at=null
+    from public.devices d
+    where i.batch_id=p_batch_id and i.owner_id=v_owner
+      and d.id=coalesce(i.assigned_device_id,v_batch.device_id) and d.owner_id=v_owner
+      and (d.revoked_at is not null or d.last_seen_at is null or d.last_seen_at<v_now-interval '90 seconds')
+      and i.status in ('authenticating','transmitting','awaiting_result')
+      and i.lease_expires_at<=v_now;
   if not exists (
     select 1 from public.batch_items i
     join public.devices d on d.id=coalesce(i.assigned_device_id,v_batch.device_id) and d.owner_id=v_owner
