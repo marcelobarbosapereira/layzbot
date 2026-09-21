@@ -33,6 +33,8 @@ export const agentJobState = z.enum([
   'awaiting_result',
   'completed',
   'interrupted',
+  'needs_attention',
+  'failed',
 ]);
 
 export const agentJobClaim = z.object({}).strict();

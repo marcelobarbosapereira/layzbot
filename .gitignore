@@ -5,6 +5,7 @@
 *.pfx
 *.p12
 playwright/.auth/
+apps/web/test-results/
 downloads/
 artifacts/
 .next/
