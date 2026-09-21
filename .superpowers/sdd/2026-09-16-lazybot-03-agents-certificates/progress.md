@@ -15,3 +15,9 @@ Next task: Task 12 — Playwright PFX authentication feasibility spike.
 Task 11: fix round 1 — addressed review findings for secure CLI prompting, OpenSSL metadata inspection, Windows ACL hardening, Secret Service newline handling, idempotent clear, and transactional cleanup. Agent tests 13/13 plus workspace lint/typecheck/build/diff-check passed.
 
 Task 11: fix round 2 — moved ACL hardening inside transactional cleanup, added CRLF normalization, and made missing Windows username an explicit configuration failure. Agent tests 15/15 plus workspace lint/typecheck/build/diff-check passed.
+
+Task 12: complete. Added disposable local mTLS fixture generation/server harness, allowlisted HTTPS Playwright client-certificate options, PFX buffer zeroization, and feasibility evidence. Report: `.superpowers/sdd/2026-09-16-lazybot-03-agents-certificates-task12-report.md`.
+
+Verification: focused agent tests 19 passed / 1 skipped; workspace tests contracts 5, web 78, agent 19 passed / 1 skipped; lint, typecheck, build, secret scan, and `git diff --check` passed. Windows live handshake was unavailable because OpenSSL and bundled Chromium were absent; Arch was unavailable. No compatibility claim was made.
+
+Next task: Task 13 — enrollment and platform packaging.
