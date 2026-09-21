@@ -20,4 +20,6 @@ Task 12: complete. Added disposable local mTLS fixture generation/server harness
 
 Verification: focused agent tests 19 passed / 1 skipped; workspace tests contracts 5, web 78, agent 19 passed / 1 skipped; lint, typecheck, build, secret scan, and `git diff --check` passed. Windows live handshake was unavailable because OpenSSL and bundled Chromium were absent; Arch was unavailable. No compatibility claim was made.
 
+Task 12: fix round 1 — implemented the Step 6 allowlisted HTTPS origin probe and strict CLI facade. Probe tests 23 passed / 1 skipped; it launches visibly by default, records only `{ origin, tlsAccepted }`, and rejects non-allowlisted origins before browser launch.
+
 Next task: Task 13 — enrollment and platform packaging.

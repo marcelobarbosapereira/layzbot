@@ -16,3 +16,7 @@ The production helper validates HTTPS origin allowlists, resolves metadata and s
 | Arch Linux | Unavailable in this environment | Unavailable | Not run | Requires an Arch runner with Node, OpenSSL, and bundled Chromium. No compatibility claim is made. |
 
 The implementation is intentionally a feasibility harness. It does not navigate into a fiscal form and does not transmit any document.
+
+## Portal-origin probe
+
+`runProbeCli` accepts `probe --responsible ID --origin ORIGIN --allow-origin ORIGIN` (repeat `--allow-origin` for an explicit list). It rejects non-HTTPS origins and anything absent from the exact allowlist before launching Chromium. The browser is visible by default, navigates only to the allowlisted origin root, and emits only `{ origin, tlsAccepted }`; it does not print page content or submit a form. The probe is injectable for tests and closes both context and browser while clearing certificate buffers.

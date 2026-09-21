@@ -25,6 +25,13 @@ function normalizeOrigins(origins: string[]): string[] {
   return [...new Set(normalized)];
 }
 
+export function assertAllowedHttpsOrigin(origin: string, allowlistedOrigins: string[]): string {
+  const normalizedOrigin = normalizeOrigins([origin])[0];
+  const allowlist = normalizeOrigins(allowlistedOrigins);
+  if (!allowlist.includes(normalizedOrigin)) throw new Error('CERTIFICATE_ORIGIN_NOT_ALLOWED');
+  return normalizedOrigin;
+}
+
 export async function createClientCertificateOptions(
   registry: RegistryResolver,
   responsibleId: string,

@@ -2,6 +2,8 @@
 
 Implemented the disposable local mTLS harness and Playwright client-certificate integration.
 
+The Step 6 origin probe is also implemented: it requires an explicit HTTPS allowlist, opens a visible browser by default, visits only the allowlisted origin root, and emits only the TLS acceptance boolean. It never returns page content or submits fiscal forms.
+
 ## Verification
 
 - RED observed: focused test initially failed because `client-certificate.ts` did not exist.
