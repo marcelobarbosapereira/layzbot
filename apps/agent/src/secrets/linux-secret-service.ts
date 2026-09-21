@@ -15,7 +15,7 @@ function invoke(args: string[], input?: Uint8Array): Promise<Uint8Array> {
 export function createLinuxSecretServiceProvider(): SecretProvider {
   return {
     async store(key, value) { await invoke(['store', '--label=LazyBot certificate secret', 'application', 'lazybot', 'key', key], value); },
-    async read(key) { const value = await invoke(['lookup', 'application', 'lazybot', 'key', key]); return value.length ? value : null; },
-    async delete(key) { await invoke(['clear', 'application', 'lazybot', 'key', key]); },
+    async read(key) { const value = await invoke(['lookup', 'application', 'lazybot', 'key', key]); const bytes = value[value.length - 1] === 10 ? value.subarray(0, value.length - 1) : value; return bytes.length ? new Uint8Array(bytes) : null; },
+    async delete(key) { await invoke(['clear', 'application', 'lazybot', 'key', key]).catch(() => undefined); },
   };
 }

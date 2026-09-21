@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { chmod, mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { join, basename } from 'node:path';
+import { spawn } from 'node:child_process';
 import type { SecretProvider } from '../secrets/provider';
 
 export type PfxInspection = { subject: string; expiresAt: string };
@@ -11,12 +12,33 @@ type AddInput = { responsibleId: string; pfxPath: string; passphrase: string };
 
 const REGISTRY = 'certificates.json';
 const defaultInspector: PfxInspector = async () => { throw new Error('PFX_INSPECTION_UNAVAILABLE'); };
+export type PfxCommandRunner = (args: string[], input: Uint8Array) => Promise<string>;
+export function createOpenSslPfxInspector(run: PfxCommandRunner = defaultPfxRunner): PfxInspector {
+  return async (path, passphrase) => {
+    const output = await run(['pkcs12', '-in', path, '-passin', 'stdin', '-clcerts', '-nokeys', '-nodes'], new TextEncoder().encode(passphrase));
+    const subject = output.match(/^subject\s*=\s*(.+)$/m)?.[1]?.trim();
+    const expiry = output.match(/^Not After\s*:\s*(.+)$/m)?.[1]?.trim();
+    const timestamp = expiry ? Date.parse(expiry) : NaN;
+    if (!subject || !expiry || Number.isNaN(timestamp)) throw new Error('PFX_INVALID');
+    return { subject, expiresAt: new Date(timestamp).toISOString() };
+  };
+}
+function defaultPfxRunner(args: string[], input: Uint8Array): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const child = spawn('openssl', args);
+    const output: Buffer[] = []; child.stdout.on('data', (chunk: Buffer) => output.push(chunk));
+    child.on('error', () => reject(new Error('PFX_INSPECTION_UNAVAILABLE')));
+    child.on('close', (code) => code === 0 ? resolve(Buffer.concat(output).toString('utf8')) : reject(new Error('PFX_INVALID')));
+    child.stdin.end(input);
+  });
+}
+type RegistryOptions = { persist?: (items: CertificateMetadata[]) => Promise<void>; secureFile?: (path: string) => Promise<void> };
 
 export class CertificateRegistry {
   private readonly file: string;
-  constructor(private readonly dataDir: string, private readonly secrets: SecretProvider, private readonly inspect: PfxInspector = defaultInspector) { this.file = join(dataDir, REGISTRY); }
+  constructor(private readonly dataDir: string, private readonly secrets: SecretProvider, private readonly inspect: PfxInspector = createOpenSslPfxInspector(), private readonly options: RegistryOptions = {}) { this.file = join(dataDir, REGISTRY); }
   private async listRaw(): Promise<CertificateMetadata[]> { try { return JSON.parse(await readFile(this.file, 'utf8')) as CertificateMetadata[]; } catch { return []; } }
-  private async save(items: CertificateMetadata[]) { await mkdir(this.dataDir, { recursive: true }); await writeFile(this.file, JSON.stringify(items, null, 2), { mode: 0o600 }); await chmod(this.file, 0o600); }
+  private async save(items: CertificateMetadata[]) { if (this.options.persist) return this.options.persist(items); await mkdir(this.dataDir, { recursive: true }); await writeFile(this.file, JSON.stringify(items, null, 2), { mode: 0o600 }); await chmod(this.file, 0o600); }
   async list(): Promise<CertificateMetadata[]> { return this.listRaw(); }
   async add(input: AddInput): Promise<CertificateMetadata> {
     if (!input.responsibleId.trim() || !input.passphrase) throw new Error('INVALID_CERTIFICATE_INPUT');
@@ -29,12 +51,13 @@ export class CertificateRegistry {
     const id = fingerprint.slice(0, 16);
     const pfxFile = `${id}-${basename(input.pfxPath).replace(/[^a-zA-Z0-9._-]/g, '_')}`;
     await mkdir(this.dataDir, { recursive: true });
-    await copyFile(input.pfxPath, join(this.dataDir, pfxFile));
-    await chmod(join(this.dataDir, pfxFile), 0o600);
-    await this.secrets.store(`certificate/${id}`, new TextEncoder().encode(input.passphrase));
+    const target = join(this.dataDir, pfxFile);
+    await copyFile(input.pfxPath, target); await chmod(target, 0o600); await this.options.secureFile?.(target);
+    let stored = false;
+    try { await this.secrets.store(`certificate/${id}`, new TextEncoder().encode(input.passphrase)); stored = true;
     const metadata = { id, responsibleId: input.responsibleId, subject: inspected.subject, fingerprint, expiresAt: inspected.expiresAt, pfxFile };
-    await this.save([...items, metadata]);
-    return metadata;
+      await this.save([...items, metadata]); return metadata;
+    } catch (error) { if (stored) await this.secrets.delete(`certificate/${id}`).catch(() => undefined); const { unlink } = await import('node:fs/promises'); await unlink(target).catch(() => undefined); throw error; }
   }
   async remove(idOrResponsibleId: string): Promise<void> {
     const items = await this.listRaw(); const item = items.find((candidate) => candidate.id === idOrResponsibleId || candidate.responsibleId === idOrResponsibleId);

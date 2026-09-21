@@ -6,4 +6,10 @@ Task 10: complete in the resumed window. Implemented and tested the cross-platfo
 
 Verification: agent tests 7/7; workspace tests 90/90; workspace typecheck and build passed; `git diff --check` passed. No hosted database or real certificate/fiscal operation was used.
 
-Next task: Task 11 — local secret provider and certificate registry.
+Task 11: complete. Added injectable Windows DPAPI/Linux Secret Service providers, user-only certificate registry, and metadata-only CLI facade. Report: `.superpowers/sdd/2026-09-16-lazybot-03-agents-certificates-task11-report.md`.
+
+Verification: RED observed before implementation; focused and agent tests 10/10; workspace lint, typecheck, build, and `git diff --check` passed. Windows DPAPI and Linux Secret Service runtime commands were unavailable on this host; no real PFX, Supabase mutation, or fiscal effect was used.
+
+Next task: Task 12 — Playwright PFX authentication feasibility spike.
+
+Task 11: fix round 1 — addressed review findings for secure CLI prompting, OpenSSL metadata inspection, Windows ACL hardening, Secret Service newline handling, idempotent clear, and transactional cleanup. Agent tests 13/13 plus workspace lint/typecheck/build/diff-check passed.
