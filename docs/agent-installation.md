@@ -11,12 +11,14 @@ corepack pnpm --dir apps/agent build
 powershell -ExecutionPolicy Bypass -File apps/agent/scripts/package-windows.ps1
 ```
 
-Copy the package to a user-owned directory, then enroll once. The prompt accepts the development URL, device name, operating system, agent version, and the one-time token copied from **Dispositivos**:
+Copy the package to `%LOCALAPPDATA%\LazyBot`, then enroll once. The prompt accepts the development URL, device name, operating system, agent version, and the one-time token copied from **Dispositivos**:
 
 ```powershell
-& .\lazybot-agent.cmd enroll
-& .\lazybot-agent.cmd cert add --responsible <responsible-id> --pfx <path-to-disposable-pfx>
-& .\lazybot-agent.cmd run
+New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\LazyBot" | Out-Null
+Copy-Item .\* "$env:LOCALAPPDATA\LazyBot" -Recurse -Force
+& "$env:LOCALAPPDATA\LazyBot\lazybot-agent.cmd" enroll
+& "$env:LOCALAPPDATA\LazyBot\lazybot-agent.cmd" cert add --responsible <responsible-id> --pfx <path-to-disposable-pfx>
+& "$env:LOCALAPPDATA\LazyBot\lazybot-agent.cmd" run
 ```
 
 To start on interactive login, review and import `lazybot-agent.xml` with Task Scheduler. It runs as the logged-in user and is intentionally not a privileged service:
@@ -34,9 +36,11 @@ Install Node.js, `secret-tool`, and the Playwright browser dependencies using th
 ```bash
 corepack pnpm --dir apps/agent build
 bash apps/agent/scripts/package-arch.sh
-./lazybot-agent enroll
-./lazybot-agent cert add --responsible <responsible-id> --pfx <path-to-disposable-pfx>
-./lazybot-agent run
+install -d ~/.local/share/lazybot-agent
+cp -R ./dist ./node_modules ./config ./data ./lazybot-agent ~/.local/share/lazybot-agent/
+~/.local/share/lazybot-agent/lazybot-agent enroll
+~/.local/share/lazybot-agent/lazybot-agent cert add --responsible <responsible-id> --pfx <path-to-disposable-pfx>
+~/.local/share/lazybot-agent/lazybot-agent run
 ```
 
 For a user-level systemd unit:

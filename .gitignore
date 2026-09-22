@@ -5,6 +5,7 @@
 *.pfx
 *.p12
 apps/agent/test/fixtures/generated/
+apps/agent/dist/
 playwright/.auth/
 apps/web/test-results/
 downloads/

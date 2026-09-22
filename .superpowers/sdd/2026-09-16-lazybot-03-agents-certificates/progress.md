@@ -31,3 +31,5 @@ Verification: RED observed for the absent enrollment boundary; enrollment-focuse
 Next task: Plan 3 completion gate review; no further implementation task remains in the plan.
 
 Task 13 review fixes: corrected Windows packaging root, added matching Windows/POSIX launchers, made enrollment token prompts non-echoing, and ensured packaged Task Scheduler XML is UTF-16 with BOM. Agent/workspace tests, lint, typecheck, build, secret scan, and diff-check passed; commit follow-up pending.
+
+Task 13 review fixes round 2: package output now includes `dist/`, `zod`, and shared-contract runtime trees; launchers use the same `dist/src/cli/main.js` path; Arch installation/documentation matches `%h/.local/share/lazybot-agent/lazybot-agent`; packaged XML declaration is changed to UTF-16 along with its BOM. Packaging regressions and package smoke test passed.

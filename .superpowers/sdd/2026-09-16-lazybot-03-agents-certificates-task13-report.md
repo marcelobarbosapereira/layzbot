@@ -23,3 +23,5 @@ No real enrollment token, device token, certificate, hosted database mutation, f
 - Enrollment prompts now collect the one-time token without terminal echo; piped input also avoids echoing it.
 - The Windows packaging step converts the scheduler XML to UTF-16 with BOM in a temporary file before replacing the payload. The source remains UTF-8 so it is portable in Git.
 - Re-ran the Windows package script: launcher was present and the output XML BOM was `FF FE`.
+- Package output now has a stable `dist/` layout, copies the required `zod` and shared-contract runtime trees, and uses launchers that resolve relative to the package directory. Packaging regression tests cover these paths.
+- The Arch instructions install the launcher at `~/.local/share/lazybot-agent/lazybot-agent`, exactly matching the user-level systemd unit.

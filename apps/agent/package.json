@@ -5,7 +5,7 @@
   "type": "module",
   "bin": { "lazybot-agent": "dist/src/cli/main.js" },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc --noEmit false",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
