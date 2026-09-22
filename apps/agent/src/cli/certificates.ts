@@ -11,8 +11,12 @@ export function createCertificateCli(registry: CertificateRegistry) {
 }
 
 export function createDefaultCertificateCli(dataDir = process.env.LAZYBOT_DATA_DIR ?? `${process.env.LOCALAPPDATA ?? process.env.XDG_DATA_HOME ?? '.'}/LazyBot`) {
+  return createCertificateCli(createDefaultCertificateRegistry(dataDir));
+}
+
+export function createDefaultCertificateRegistry(dataDir = process.env.LAZYBOT_DATA_DIR ?? `${process.env.LOCALAPPDATA ?? process.env.XDG_DATA_HOME ?? '.'}/LazyBot`) {
   const provider = process.platform === 'win32' ? createWindowsDpapiProvider() : createLinuxSecretServiceProvider();
-  return createCertificateCli(new CertificateRegistry(dataDir, provider, undefined, { secureFile: process.platform === 'win32' ? secureWindowsFile : undefined }));
+  return new CertificateRegistry(dataDir, provider, undefined, { secureFile: process.platform === 'win32' ? secureWindowsFile : undefined });
 }
 
 type CliRegistry = Pick<CertificateRegistry, 'add' | 'list' | 'remove'>;

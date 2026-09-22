@@ -5,6 +5,7 @@ root="$(cd "$(dirname "$0")/../../.." && pwd)"
 mkdir -p "$output/config" "$output/data" "$output/dist" "$output/node_modules/@lazybot/contracts"
 if [[ -d "$root/apps/agent/dist" ]]; then cp -R "$root/apps/agent/dist/." "$output/dist/"; fi
 cp -R "$root/apps/agent/node_modules/zod" "$output/node_modules/zod"
+cp -R "$root/apps/agent/node_modules/playwright" "$output/node_modules/playwright"
 contract_stage="$(mktemp -d)"
 cp -R "$root/packages/contracts/src/." "$contract_stage/"
 printf '%s\n' '{"type":"module"}' > "$contract_stage/package.json"

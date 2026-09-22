@@ -5,6 +5,7 @@ $root = (Resolve-Path "$PSScriptRoot\..\..\..").Path
 New-Item -ItemType Directory -Force -Path $Output, "$Output\config", "$Output\data", "$Output\dist", "$Output\node_modules" | Out-Null
 Copy-Item "$root\apps\agent\dist\*" "$Output\dist" -Recurse -Force -ErrorAction SilentlyContinue
 Copy-Item "$root\apps\agent\node_modules\zod" "$Output\node_modules\zod" -Recurse -Force
+Copy-Item "$root\apps\agent\node_modules\playwright" "$Output\node_modules\playwright" -Recurse -Force
 New-Item -ItemType Directory -Force -Path "$Output\node_modules\@lazybot\contracts" | Out-Null
 $contractStage = Join-Path ([IO.Path]::GetTempPath()) ('lazybot-contracts-' + [guid]::NewGuid().ToString())
 New-Item -ItemType Directory -Force -Path $contractStage | Out-Null

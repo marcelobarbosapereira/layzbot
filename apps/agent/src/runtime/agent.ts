@@ -67,6 +67,7 @@ export class AgentRuntime {
     let sequence = job.nextSequence;
     let pending = Promise.resolve();
     let renewalError: unknown;
+    let heartbeatError: unknown;
     let active = true;
     const enqueue = (resolveState: (current: ActiveState) => ActiveState, message: string): Promise<void> => {
       const operation = pending.then(async () => {
@@ -79,16 +80,19 @@ export class AgentRuntime {
       pending = operation;
       return operation;
     };
-    const stopRenewal = this.clock.every(() => {
-      if (!active || signal.aborted || renewalError) return;
+    const stopActiveHeartbeat = this.clock.every(() => {
+      if (!active || signal.aborted || heartbeatError) return;
+      void this.api.heartbeat().catch((error: unknown) => { heartbeatError = error; });
+      if (renewalError) return;
       void enqueue((current) => current, 'Agent lease renewed').catch((error: unknown) => { renewalError = error; });
     }, LEASE_RENEW_MS);
     try {
       await this.adapter.execute(job, {
         transition: (nextState, message) => enqueue(() => nextState, message),
       }, signal);
-      stopRenewal();
+      stopActiveHeartbeat();
       await pending;
+      if (heartbeatError) throw heartbeatError;
       if (renewalError) throw renewalError;
       active = false;
       if (signal.aborted) {
@@ -105,7 +109,7 @@ export class AgentRuntime {
       throw error;
     } finally {
       active = false;
-      stopRenewal();
+      stopActiveHeartbeat();
     }
   }
 }

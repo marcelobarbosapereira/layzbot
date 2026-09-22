@@ -86,11 +86,12 @@ describe('AgentRuntime', () => {
     await vi.waitFor(() => expect(calls.map((call) => call.kind)).toEqual(['heartbeat', 'claim', 'event']));
     tick?.();
     releaseFirstEvent?.();
-    await vi.waitFor(() => expect(calls.map((call) => call.kind)).toEqual(['heartbeat', 'claim', 'event', 'event']));
+    await vi.waitFor(() => expect(calls.map((call) => call.kind)).toEqual(['heartbeat', 'claim', 'event', 'heartbeat', 'event']));
     release?.();
     await running;
     expect(calls.slice(2)).toEqual([
       { kind: 'event', state: 'authenticating', next: 'transmitting', sequence: 1 },
+      { kind: 'heartbeat' },
       { kind: 'event', state: 'transmitting', next: 'transmitting', sequence: 2 },
       { kind: 'event', state: 'transmitting', next: 'awaiting_result', sequence: 3 },
       { kind: 'complete', state: 'awaiting_result', sequence: 4 },

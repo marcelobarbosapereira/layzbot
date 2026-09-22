@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { createDefaultCertificateCli, runCertificateCli } from './certificates.js';
+import { fileURLToPath } from 'node:url';
+import { createDefaultCertificateCli, createDefaultCertificateRegistry, runCertificateCli } from './certificates.js';
+import { runProbeCli, type Launch } from './probe.js';
 import { createLinuxSecretServiceProvider } from '../secrets/linux-secret-service.js';
 import { createWindowsDpapiProvider } from '../secrets/windows-dpapi.js';
 import { enroll } from './enroll.js';
 import { createDefaultAgentDataDir, runAgent } from './run.js';
+import type { SecretProvider } from '../secrets/provider.js';
 
 const dataDir = createDefaultAgentDataDir();
 const secrets = process.platform === 'win32' ? createWindowsDpapiProvider() : createLinuxSecretServiceProvider();
@@ -42,13 +45,26 @@ async function promptEnroll(): Promise<void> {
   } finally { rl.close(); }
 }
 
-async function main(argv = process.argv.slice(2)): Promise<void> {
-  if (argv[0] === 'enroll' && argv.length === 1) return promptEnroll();
-  if (argv[0] === 'run' && argv.length === 1) return runAgent({ dataDir, secrets });
-  if (argv[0] === 'cert') { await runCertificateCli(argv, { registry: createDefaultCertificateCli(), readPassphrase: async () => {
+export type CliDependencies = {
+  dataDir: string;
+  secrets: SecretProvider;
+  certificateCli: ReturnType<typeof createDefaultCertificateCli>;
+  certificateRegistry: ReturnType<typeof createDefaultCertificateRegistry>;
+  probeLaunch?: Launch;
+  enrollPrompt?: () => Promise<void>;
+};
+
+export async function runCli(argv: string[], dependencies: CliDependencies): Promise<void> {
+  const enrollPrompt = dependencies.enrollPrompt ?? promptEnroll;
+  if (argv[0] === 'enroll' && argv.length === 1) return enrollPrompt();
+  if (argv[0] === 'run' && argv.length === 1) return runAgent({ dataDir: dependencies.dataDir, secrets: dependencies.secrets });
+  if (argv[0] === 'cert') { await runCertificateCli(argv, { registry: dependencies.certificateCli, readPassphrase: async () => {
     const rl = createInterface({ input, output }); try { return await rl.question('PFX passphrase: '); } finally { rl.close(); }
   }, write: (line) => output.write(`${line}\n`) }); return; }
+  if (argv[0] === 'probe') { await runProbeCli(argv, { registry: dependencies.certificateRegistry, launch: dependencies.probeLaunch, write: (line) => output.write(`${line}\n`) }); return; }
   throw new Error('INVALID_ARGUMENTS');
 }
 
-main().catch((error: unknown) => { output.write(`${error instanceof Error ? error.message : 'COMMAND_FAILED'}\n`); process.exitCode = 1; });
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  runCli(process.argv.slice(2), { dataDir, secrets, certificateCli: createDefaultCertificateCli(dataDir), certificateRegistry: createDefaultCertificateRegistry(dataDir) }).catch((error: unknown) => { output.write(`${error instanceof Error ? error.message : 'COMMAND_FAILED'}\n`); process.exitCode = 1; });
+}

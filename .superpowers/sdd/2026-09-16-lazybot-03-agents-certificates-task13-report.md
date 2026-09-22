@@ -26,5 +26,8 @@ No real enrollment token, device token, certificate, hosted database mutation, f
 - Package output now has a stable `dist/` layout, copies the required `zod` and shared-contract runtime trees, and uses launchers that resolve relative to the package directory. Packaging regression tests cover these paths.
 - The contracts package is compiled from a temporary NodeNext staging copy with explicit `.js` specifiers, then exported as `node_modules/@lazybot/contracts/dist/index.js`; the repository's web-facing source remains compatible with Next.js. The clean Windows launcher smoke test now executes successfully and reports the expected invalid-command error.
 - The Arch instructions install the launcher at `~/.local/share/lazybot-agent/lazybot-agent`, exactly matching the user-level systemd unit.
+- Both package scripts now include the Node `playwright` package as well as the optional browser cache, so the probe's dynamic import is available in a copied package.
+- The top-level CLI dispatcher now routes `probe` through the real allowlisted origin probe; a focused dispatcher regression covers the command boundary.
+- The runtime sends a heartbeat alongside lease renewal at the active interval while a job is executing; the runtime regression verifies the periodic signal and ordered event sequence.
 - Packaging now compiles `@lazybot/contracts` to JavaScript with NodeNext-compatible specifiers and points the packaged dependency export at `dist/index.js`; no `.ts` source is required at runtime. A clean Windows package smoke run executed the launcher and returned the expected `INVALID_ARGUMENTS` for an invalid command.
 - Arch documentation now explicitly changes into the default `apps/agent/dist/package-arch` output before installation.
