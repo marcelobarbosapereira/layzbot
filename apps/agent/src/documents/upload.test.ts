@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, symlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -22,5 +22,20 @@ describe('artifact upload boundary', () => {
     const destination = await mirrorArtifact(root, 'owner/das.pdf', new Uint8Array([1, 2]));
     expect(await readFile(destination)).toEqual(Buffer.from([1, 2]));
     await rm(root, { recursive: true, force: true });
+  });
+
+  it('rejects a pre-existing symlink in the mirror hierarchy', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'lazybot-mirror-link-'));
+    const outside = await mkdtemp(join(tmpdir(), 'lazybot-mirror-outside-'));
+    try {
+      await symlink(outside, join(root, 'owner'), 'junction');
+    } catch {
+      await rm(root, { recursive: true, force: true });
+      await rm(outside, { recursive: true, force: true });
+      return;
+    }
+    await expect(mirrorArtifact(root, 'owner/das.pdf', new Uint8Array([1]))).rejects.toThrow('MIRROR_PATH_TRAVERSAL');
+    await rm(root, { recursive: true, force: true });
+    await rm(outside, { recursive: true, force: true });
   });
 });

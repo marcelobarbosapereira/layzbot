@@ -1,4 +1,4 @@
-import { mkdir, rename, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, rename, rm, realpath, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, resolve, sep } from 'node:path';
 import type { ArtifactKind } from './naming.js';
 import { sha256 } from './naming.js';
@@ -20,9 +20,15 @@ export async function mirrorArtifact(root: string, objectPath: string, bytes: Ui
   if (!normalizedPath || normalizedPath.startsWith('/') || segments.some((segment) => segment === '..' || segment === '')) throw new Error('MIRROR_PATH_TRAVERSAL');
   const destination = resolve(absoluteRoot, join(...segments));
   if (!isAbsolute(destination) || (destination !== absoluteRoot && !destination.startsWith(`${absoluteRoot}${sep}`))) throw new Error('MIRROR_PATH_TRAVERSAL');
+  await ensureSafeMirrorDirectory(absoluteRoot, dirname(destination));
+  try {
+    const existing = await lstat(destination);
+    if (existing.isSymbolicLink()) throw new Error('MIRROR_PATH_TRAVERSAL');
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
   const temporary = `${destination}.tmp-${process.pid}-${Date.now()}`;
   try {
-    await mkdir(dirname(destination), { recursive: true });
     await writeFile(temporary, bytes, { flag: 'wx' });
     await rename(temporary, destination);
   } catch (error) {
@@ -30,4 +36,25 @@ export async function mirrorArtifact(root: string, objectPath: string, bytes: Ui
     throw error;
   }
   return destination;
+}
+
+async function ensureSafeMirrorDirectory(root: string, directory: string): Promise<void> {
+  await mkdir(root, { recursive: true });
+  const rootStat = await lstat(root);
+  if (rootStat.isSymbolicLink()) throw new Error('MIRROR_PATH_TRAVERSAL');
+  const realRoot = await realpath(root);
+  const relative = directory.slice(root.length).split(sep).filter(Boolean);
+  let current = root;
+  for (const segment of relative) {
+    current = join(current, segment);
+    try {
+      const stat = await lstat(current);
+      if (stat.isSymbolicLink() || !stat.isDirectory()) throw new Error('MIRROR_PATH_TRAVERSAL');
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+      await mkdir(current);
+    }
+    const resolved = await realpath(current);
+    if (resolved !== realRoot && !resolved.startsWith(`${realRoot}${sep}`)) throw new Error('MIRROR_PATH_TRAVERSAL');
+  }
 }
