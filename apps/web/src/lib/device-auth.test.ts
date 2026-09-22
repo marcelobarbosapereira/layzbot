@@ -4,6 +4,7 @@ import { authenticateDevice, hashDeviceToken, redeemEnrollmentToken } from './de
 
 const boundary = vi.hoisted(() => ({ rpc: vi.fn() }));
 vi.mock('./supabase/server', () => ({ createClient: async () => ({ rpc: boundary.rpc }) }));
+vi.mock('./supabase/service', () => ({ createServiceClient: () => ({ rpc: boundary.rpc }) }));
 
 const deviceId = '60000000-0000-4000-8000-000000000071';
 const ownerId = '10000000-0000-4000-8000-000000000071';
