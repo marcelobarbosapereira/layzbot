@@ -64,7 +64,20 @@ describe('PgdasAdapter fixture portal', () => {
   it('requires the immutable confirmation snapshot', async () => {
     const url = await server.start();
     await expect(new PgdasAdapter({ baseUrl: url }).execute(
-      { ...job, parameters: {} }, { transition: async () => undefined }, new AbortController().signal,
+      { ...job, parameters: {} }, {
+        transition: async () => undefined,
+        checkpoint: async () => undefined,
+      } as PgdasReporter, new AbortController().signal,
     )).rejects.toThrow('CONFIRMATION_REQUIRED');
+  });
+
+  it('fails before any GET when persistent checkpointing is unavailable', async () => {
+    const url = await server.start();
+    let calls = 0;
+    const fetcher: typeof fetch = async (...args) => { calls += 1; return fetch(...args); };
+    await expect(new PgdasAdapter({ baseUrl: url, fetcher }).execute(
+      job, { transition: async () => undefined }, new AbortController().signal,
+    )).rejects.toThrow('PGDAS_CHECKPOINT_REQUIRED');
+    expect(calls).toBe(0);
   });
 });

@@ -42,6 +42,9 @@ export class PgdasAdapter implements PortalAdapter {
 
   async execute(job: AgentJob, reporter: JobReporter, signal: AbortSignal): Promise<void> {
     const pgdasReporter = reporter as PgdasReporter;
+    if (typeof pgdasReporter.checkpoint !== 'function') {
+      throw new Error('PGDAS_CHECKPOINT_REQUIRED');
+    }
     const parameters = job.parameters;
     assertTransmissionAllowed({
       confirmed: parameters.confirmed === true,

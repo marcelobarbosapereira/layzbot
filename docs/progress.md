@@ -174,3 +174,4 @@
 - Every fixture GET now has a preceding checkpoint event carrying the current state and read intent; regression coverage proves event-before-GET ordering.
 - Adapter tests cover CAPTCHA, maintenance, and missing authorization, all stopping before any external side effect.
 - `failed` and `interrupted` have an explicit `-> authenticating` re-entry transition, so retryability cannot silently dead-end at a terminal state.
+- The adapter now rejects reporters without a persistent checkpoint function before validating or fetching anything; the base `JobReporter` contract remains unchanged for the existing runtime.
