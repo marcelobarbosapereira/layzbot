@@ -185,3 +185,11 @@
 - Verification: focused suite 46 passed / 1 environmental skip; workspace 129 passed; lint, typecheck, build, secret scan, and `git diff --check` passed.
 - Next incomplete plan task: Task 16 — competence, one-activity revenue, and calculation.
 - Review correction: login/profile/button locators now require exactly one match, certificate authentication checks the expected responsible document, and profile validation reads the visible document locator. Duplicate locator and visual mismatch regressions pass.
+
+## 2026-09-22 — PGDAS automation plan, Task 16
+
+- Added the fixture-only assessment page object and exact activity mapping for the two supported one-activity profiles: `commerce` → `Comércio` and `services` → `Serviços`.
+- The assessment page selects and independently reads back competence, activity, and integer revenue cents before calculation. Unsupported activities, ambiguous/missing options, mismatched readbacks, decimal/negative revenue, and missing competence stop with stable `needs_attention` reasons.
+- Calculation parsing returns integer `totalDueCents` and a SHA-256 `summaryFingerprint` containing the immutable taxpayer/competence/activity/revenue snapshot and portal total. No submit, portal transmission, certificate, document download, or Supabase mutation is included.
+- Verification: agent tests 55 passed / 1 environmental skip; agent typecheck and build passed; `git diff --check` passed. Real PGDAS interaction was not attempted.
+- Next incomplete plan task: Task 17 — existing declaration detection and idempotent submission guard.
