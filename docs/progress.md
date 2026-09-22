@@ -160,3 +160,11 @@
 - Plan 2 Task 9 is complete and committed in `a701fd4` plus review-fix commit `a33819d`; the whole-branch review found no remaining Critical or Important findings.
 - Task 10 was intentionally deferred to the next five-hour window at the user's request. Partial uncommitted agent-runtime files are preserved in the local stash `wip: pause task 10 agent runtime for next window`; they were not included in a success commit.
 - Exact next step: restore the stash, finish Task 10 with independent tests/review, then commit `feat: add cross-platform executor runtime` only after verification.
+
+## 2026-09-22 — PGDAS automation plan, Task 14
+
+- Added a strict allow-listed PGDAS state machine with terminal/retry classification and an explicit immutable snapshot guard before any transmission boundary.
+- Added `PgdasAdapter` and a deterministic fixture-only HTTP portal. The adapter reads sanitized certificate, representative, competence, declaration, revenue, calculation, and confirmation pages, then stops before submission; it never POSTs, transmits, downloads fiscal documents, or uses real certificates.
+- Added sanitized HTML fixtures for success, receipt/DAS placeholders, CAPTCHA, missing authorization, and maintenance outcomes, plus tests proving the state rules and read-only adapter behavior.
+- Verification: focused PGDAS tests 36 passed / 1 skipped; agent typecheck and build passed; `git diff --check` passed. No Supabase mutation, portal access, fiscal transmission, or push occurred.
+- Next incomplete plan task: Task 15 — authentication, identity, and representative selection page objects.
