@@ -17,6 +17,7 @@ export class PgdasProfilePage {
     if (await profile.count() !== 1) return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
     const documentLocator = profile.locator('[data-taxpayer-document], [data-document], [aria-label*="document" i], [aria-label*="CNPJ" i], [aria-label*="CPF" i]');
     if (await documentLocator.count() !== 1) return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
+    if (!(await documentLocator.isVisible())) return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
     const displayed = await documentLocator.innerText();
     if (normalizeDocument(displayed) !== normalizeDocument(snapshot.document)) {
       return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };

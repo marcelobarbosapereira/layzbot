@@ -6,3 +6,4 @@ Task 14 review fix 2: persistent checkpoint callback is now required before any 
 Task 15: complete pending commit and controller review. Semantic login/profile page objects, stable attention codes, screenshot sanitization, and manual real-origin preflight runbook implemented. Focused and workspace verification passed; real-origin preflight unavailable on this host.
 Next incomplete task: Task 16 — competence, one-activity revenue, and calculation.
 Task 15 review correction: certificate/profile/button locator ambiguity is rejected; certificate document is checked and profile document is read from visible content. Duplicate locator and visual mismatch regressions pass. Follow-up commit pending.
+Task 15 final review correction: profile document locator visibility is required before text readback; hidden-document regression passes. Follow-up commit pending.

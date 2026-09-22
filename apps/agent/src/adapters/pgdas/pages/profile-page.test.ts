@@ -63,6 +63,14 @@ describe('PGDAS identity and representative page objects', () => {
     await page.close();
   });
 
+  run('rejects a hidden document locator before reading it', async () => {
+    const page = await browser.newPage();
+    await page.setContent(`<section data-taxpayer-profile data-taxpayer-id="tax-1"><span data-taxpayer-document style="display:none">${fixtureDocument}</span><button>Selecionar</button></section>`);
+    const result = await new PgdasProfilePage(page).select({ id: 'tax-1', document: fixtureDocument });
+    expect(result).toEqual({ status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' });
+    await page.close();
+  });
+
   it.each([
     ['unexpected certificate', '<main><section data-certificate data-responsible-id="other" data-subject="CN=Other"></section></main>', 'UNEXPECTED_CERTIFICATE'],
     ['missing authorization', '<main><p data-status="missing">Procuração não encontrada</p></main>', 'AUTHORIZATION_MISSING'],
