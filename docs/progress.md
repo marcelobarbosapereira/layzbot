@@ -175,3 +175,12 @@
 - Adapter tests cover CAPTCHA, maintenance, and missing authorization, all stopping before any external side effect.
 - `failed` and `interrupted` have an explicit `-> authenticating` re-entry transition, so retryability cannot silently dead-end at a terminal state.
 - The adapter now rejects reporters without a persistent checkpoint function before validating or fetching anything; the base `JobReporter` contract remains unchanged for the existing runtime.
+
+## 2026-09-22 — PGDAS automation plan, Task 15
+
+- Added semantic PGDAS login and profile page objects. Certificate responsible ID, normalized subject, and optional fingerprint must match the expected responsible; taxpayer selection requires a stable profile identity and exact document readback before clicking the accessible selection control.
+- Added stable `needs_attention` codes for unexpected certificate, missing authorization, maintenance, and CAPTCHA. Results/errors do not contain full document numbers.
+- Added screenshot sanitization that refuses capture unless document, name, revenue, and barcode locators are each uniquely present and visible; Playwright masks all four regions.
+- Added a non-transmitting real-origin homologation checklist. The preflight is unavailable on this host and was not attempted; no portal, real certificate, fiscal transmission, or remote mutation was used.
+- Verification: focused suite 46 passed / 1 environmental skip; workspace 129 passed; lint, typecheck, build, secret scan, and `git diff --check` passed.
+- Next incomplete plan task: Task 16 — competence, one-activity revenue, and calculation.
