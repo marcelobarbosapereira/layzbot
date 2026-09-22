@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { readFile } from 'node:fs/promises';
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { join } from 'node:path';
+
+const execFileAsync = promisify(execFile);
 
 const root = join(process.cwd(), '');
 
@@ -20,6 +26,12 @@ describe('packaging launch boundaries', () => {
     expect(windows).toContain('node_modules\\zod');
     expect(windows).toContain('Encoding Unicode');
     expect(arch).toContain('node_modules/zod');
-    expect(arch).toContain('node_modules/@lazybot/contracts/src');
+    expect(arch).toContain('node_modules/@lazybot/contracts/dist');
   });
+
+  it.skipIf(process.platform !== 'win32')('executes the packaged launcher from its clean output directory', async () => {
+    const output = await mkdtemp(join(tmpdir(), 'lazybot-package-smoke-'));
+    await execFileAsync('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', join(root, 'scripts', 'package-windows.ps1'), '-Output', output]);
+    await expect(execFileAsync('cmd.exe', ['/d', '/c', join(output, 'lazybot-agent.cmd'), 'invalid'])).rejects.toMatchObject({ stdout: expect.stringContaining('INVALID_ARGUMENTS') });
+  }, 30000);
 });

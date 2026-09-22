@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc --noEmit false",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run --exclude dist/**"
   },
   "dependencies": {
     "@lazybot/contracts": "workspace:*",

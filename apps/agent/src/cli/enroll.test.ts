@@ -2,9 +2,9 @@ import { describe, expect, it, vi } from 'vitest';
 import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createInMemorySecretProvider } from '../secrets/provider';
-import { DEVICE_TOKEN_SECRET_KEY, enroll, loadAgentSettings, readDeviceToken } from './enroll';
-import { runAgent } from './run';
+import { createInMemorySecretProvider } from '../secrets/provider.js';
+import { DEVICE_TOKEN_SECRET_KEY, enroll, loadAgentSettings, readDeviceToken } from './enroll.js';
+import { runAgent } from './run.js';
 
 describe('enrollment and run boundaries', () => {
   it('exchanges a one-time token once and stores only the returned token in the secret provider', async () => {

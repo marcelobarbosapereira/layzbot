@@ -150,6 +150,8 @@
 - Task 13 verification: agent tests 25 passed / 1 skipped, workspace tests passed, lint/typecheck/build passed, secret scan and `git diff --check` passed. Windows/Arch installation and enrollment are unavailable on this host; no platform success claim is made.
 - Task 13 review fixes corrected Windows root traversal, added package launchers consistent with the scheduler/systemd artifacts, hid enrollment-token input, and converted the packaged Windows XML to UTF-16 with BOM. A package smoke check confirmed the launcher and `FF FE` BOM; no platform installation claim was added.
 - Task 13 review fixes round 2 aligned the generated `dist/` launcher layout with Windows/XML and Arch/systemd, included the `zod` and shared-contract runtime trees in both packages, and updated the Arch installation commands to `~/.local/share/lazybot-agent/lazybot-agent`. Packaging regression tests passed; no platform installation claim was added.
+- Task 13 review fixes round 3 compile the shared contracts to standalone NodeNext JavaScript in each package, add a clean Windows launcher smoke test (skipped where PowerShell packaging is unavailable), and align Arch instructions with the default `apps/agent/dist/package-arch` output. No platform installation claim was added.
+- Task 13 review fixes round 3 completed the standalone contract compilation through temporary staging, with the package launcher smoke test executing successfully and the expected invalid-command response. No platform installation claim was added.
 
 ## 2026-09-21 — checkpoint before Plan 3 Task 10
 

@@ -1,7 +1,7 @@
 import type { AgentJobEvent, AgentJobTerminal } from '@lazybot/contracts';
-import type { AgentJob, PortalAdapter } from '../adapters/portal-adapter';
+import type { AgentJob, PortalAdapter } from '../adapters/portal-adapter.js';
 
-export type { AgentJob } from '../adapters/portal-adapter';
+export type { AgentJob } from '../adapters/portal-adapter.js';
 
 export interface AgentApi {
   heartbeat(): Promise<void>;

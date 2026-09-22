@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import type { SecretProvider } from './provider';
+import type { SecretProvider } from './provider.js';
 
 function invoke(args: string[], input?: Uint8Array): Promise<Uint8Array> {
   return new Promise((resolve, reject) => {

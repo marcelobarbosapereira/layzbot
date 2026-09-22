@@ -33,3 +33,7 @@ Next task: Plan 3 completion gate review; no further implementation task remains
 Task 13 review fixes: corrected Windows packaging root, added matching Windows/POSIX launchers, made enrollment token prompts non-echoing, and ensured packaged Task Scheduler XML is UTF-16 with BOM. Agent/workspace tests, lint, typecheck, build, secret scan, and diff-check passed; commit follow-up pending.
 
 Task 13 review fixes round 2: package output now includes `dist/`, `zod`, and shared-contract runtime trees; launchers use the same `dist/src/cli/main.js` path; Arch installation/documentation matches `%h/.local/share/lazybot-agent/lazybot-agent`; packaged XML declaration is changed to UTF-16 along with its BOM. Packaging regressions and package smoke test passed.
+
+Task 13 review fixes round 3: changed production imports to NodeNext-compatible `.js` specifiers, compiled the contracts package into standalone JavaScript at `node_modules/@lazybot/contracts/dist/index.js`, and added a clean package launcher smoke test (Windows-capable, skipped on this host). Arch documentation now uses the script's default `apps/agent/dist/package-arch` output. Verification and commit follow.
+
+Task 13 review fixes round 3 completed: package scripts stage contracts temporarily with `.js` specifiers and compile them as NodeNext ESM, preserving the web source's extensionless imports. The clean Windows package launcher smoke test returned `INVALID_ARGUMENTS` as expected; agent 28/29 (1 skip), workspace tests, lint, typecheck, build and diff-check passed.

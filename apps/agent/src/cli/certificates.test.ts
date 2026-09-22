@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runCertificateCli } from './certificates';
+import { runCertificateCli } from './certificates.js';
 
 describe('certificate CLI', () => {
   it('reads add passphrase through the prompt and never accepts it from argv', async () => {

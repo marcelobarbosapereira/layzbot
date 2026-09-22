@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { HttpAgentApi } from './client';
+import { HttpAgentApi } from './client.js';
 
 describe('HttpAgentApi', () => {
   const config = {

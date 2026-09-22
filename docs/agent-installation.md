@@ -11,7 +11,7 @@ corepack pnpm --dir apps/agent build
 powershell -ExecutionPolicy Bypass -File apps/agent/scripts/package-windows.ps1
 ```
 
-Copy the package to `%LOCALAPPDATA%\LazyBot`, then enroll once. The prompt accepts the development URL, device name, operating system, agent version, and the one-time token copied from **Dispositivos**:
+The default output is `apps/agent/dist/package-windows`. Copy that package to `%LOCALAPPDATA%\LazyBot`, then enroll once. The prompt accepts the development URL, device name, operating system, agent version, and the one-time token copied from **Dispositivos**:
 
 ```powershell
 New-Item -ItemType Directory -Force "$env:LOCALAPPDATA\LazyBot" | Out-Null
@@ -36,6 +36,7 @@ Install Node.js, `secret-tool`, and the Playwright browser dependencies using th
 ```bash
 corepack pnpm --dir apps/agent build
 bash apps/agent/scripts/package-arch.sh
+cd apps/agent/dist/package-arch
 install -d ~/.local/share/lazybot-agent
 cp -R ./dist ./node_modules ./config ./data ./lazybot-agent ~/.local/share/lazybot-agent/
 ~/.local/share/lazybot-agent/lazybot-agent enroll

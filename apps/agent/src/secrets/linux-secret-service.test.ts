@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeSecretLookup } from './linux-secret-service';
+import { normalizeSecretLookup } from './linux-secret-service.js';
 
 describe('Secret Service output', () => {
   it('removes either LF or CRLF terminators without changing secret bytes', () => {

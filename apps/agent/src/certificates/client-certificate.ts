@@ -1,4 +1,4 @@
-import type { CertificateRegistry, ResolvedCertificate } from './registry';
+import type { CertificateRegistry, ResolvedCertificate } from './registry.js';
 
 export type ClientCertificateOption = {
   origin: string;

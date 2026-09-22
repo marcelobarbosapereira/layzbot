@@ -1,7 +1,7 @@
 import { mkdir, readFile, writeFile, chmod } from 'node:fs/promises';
 import { join } from 'node:path';
 import { agentEnrollment } from '@lazybot/contracts';
-import type { SecretProvider } from '../secrets/provider';
+import type { SecretProvider } from '../secrets/provider.js';
 
 export type EnrollmentResponse = { deviceId: string; deviceToken: string };
 export type EnrollmentTransport = (url: string, input: unknown) => Promise<EnrollmentResponse>;

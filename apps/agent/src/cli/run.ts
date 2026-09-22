@@ -1,9 +1,9 @@
-import { readDeviceToken, loadAgentSettings } from './enroll';
-import type { SecretProvider } from '../secrets/provider';
-import { readAgentConfig } from '../config';
-import { HttpAgentApi } from '../api/client';
-import { AgentRuntime } from '../runtime/agent';
-import { SimulatedAdapter } from '../adapters/simulated';
+import { readDeviceToken, loadAgentSettings } from './enroll.js';
+import type { SecretProvider } from '../secrets/provider.js';
+import { readAgentConfig } from '../config.js';
+import { HttpAgentApi } from '../api/client.js';
+import { AgentRuntime } from '../runtime/agent.js';
+import { SimulatedAdapter } from '../adapters/simulated.js';
 
 export type RuntimeFactory = (config: ReturnType<typeof readAgentConfig>, signal: AbortSignal) => Promise<void>;
 

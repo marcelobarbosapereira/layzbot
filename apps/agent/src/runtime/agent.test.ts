@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AgentRuntime, type AgentApi, type RuntimeClock } from './agent';
-import { SimulatedAdapter } from '../adapters/simulated';
+import { AgentRuntime, type AgentApi, type RuntimeClock } from './agent.js';
+import { SimulatedAdapter } from '../adapters/simulated.js';
 
 describe('AgentRuntime', () => {
   it('heartbeats, claims one item, emits ordered transitions, completes, then stops on abort', async () => {

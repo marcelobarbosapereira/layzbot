@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { createDefaultCertificateCli, runCertificateCli } from './certificates';
-import { createLinuxSecretServiceProvider } from '../secrets/linux-secret-service';
-import { createWindowsDpapiProvider } from '../secrets/windows-dpapi';
-import { enroll } from './enroll';
-import { createDefaultAgentDataDir, runAgent } from './run';
+import { createDefaultCertificateCli, runCertificateCli } from './certificates.js';
+import { createLinuxSecretServiceProvider } from '../secrets/linux-secret-service.js';
+import { createWindowsDpapiProvider } from '../secrets/windows-dpapi.js';
+import { enroll } from './enroll.js';
+import { createDefaultAgentDataDir, runAgent } from './run.js';
 
 const dataDir = createDefaultAgentDataDir();
 const secrets = process.platform === 'win32' ? createWindowsDpapiProvider() : createLinuxSecretServiceProvider();

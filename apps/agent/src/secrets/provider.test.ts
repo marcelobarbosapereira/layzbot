@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { SecretProvider } from './provider';
-import { createInMemorySecretProvider } from './provider';
+import type { SecretProvider } from './provider.js';
+import { createInMemorySecretProvider } from './provider.js';
 
 describe('SecretProvider contract', () => {
   it('stores, reads and deletes opaque bytes without exposing them in errors', async () => {

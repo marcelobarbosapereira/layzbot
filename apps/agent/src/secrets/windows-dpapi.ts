@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
-import type { SecretProvider } from './provider';
+import type { SecretProvider } from './provider.js';
 
 const SCRIPT = '$input=[Console]::OpenStandardInput();$ms=New-Object IO.MemoryStream;$input.CopyTo($ms);$b=$ms.ToArray();if($args[0]-eq"protect"){$b=[Security.Cryptography.ProtectedData]::Protect($b,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)}else{$b=[Security.Cryptography.ProtectedData]::Unprotect($b,$null,[Security.Cryptography.DataProtectionScope]::CurrentUser)};[Console]::OpenStandardOutput().Write($b,0,$b.Length)';
 

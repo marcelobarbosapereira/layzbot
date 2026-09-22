@@ -2,8 +2,8 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { CertificateRegistry, createOpenSslPfxInspector, type PfxInspector } from './registry';
-import { createInMemorySecretProvider } from '../secrets/provider';
+import { CertificateRegistry, createOpenSslPfxInspector, type PfxInspector } from './registry.js';
+import { createInMemorySecretProvider } from '../secrets/provider.js';
 
 const pfx = new Uint8Array([1, 2, 3, 4]);
 

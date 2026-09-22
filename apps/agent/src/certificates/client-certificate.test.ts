@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createClientCertificateContext, createClientCertificateOptions } from './client-certificate';
+import { createClientCertificateContext, createClientCertificateOptions } from './client-certificate.js';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { generateFixtures, GENERATED_FIXTURE_DIR, FIXTURE_PASSPHRASE } from '../../test/mtls/generate-fixtures';
-import { startMtlsServer } from '../../test/mtls/server';
+import { generateFixtures, GENERATED_FIXTURE_DIR, FIXTURE_PASSPHRASE } from '../../test/mtls/generate-fixtures.js';
+import { startMtlsServer } from '../../test/mtls/server.js';
 
 describe('client certificate options', () => {
   it('rejects non-HTTPS and non-allowlisted origins before resolving secrets', async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readAgentConfig } from './config';
+import { readAgentConfig } from './config.js';
 
 describe('readAgentConfig', () => {
   const valid = {

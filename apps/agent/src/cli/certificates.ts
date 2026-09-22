@@ -1,6 +1,6 @@
-import { createLinuxSecretServiceProvider } from '../secrets/linux-secret-service';
-import { createWindowsDpapiProvider, secureWindowsFile } from '../secrets/windows-dpapi';
-import { CertificateRegistry } from '../certificates/registry';
+import { createLinuxSecretServiceProvider } from '../secrets/linux-secret-service.js';
+import { createWindowsDpapiProvider, secureWindowsFile } from '../secrets/windows-dpapi.js';
+import { CertificateRegistry } from '../certificates/registry.js';
 
 export function createCertificateCli(registry: CertificateRegistry) {
   return {

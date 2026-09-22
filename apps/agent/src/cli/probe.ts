@@ -1,5 +1,5 @@
-import type { CertificateRegistry } from '../certificates/registry';
-import { assertAllowedHttpsOrigin, clearClientCertificateOptions, createClientCertificateOptions, type ClientCertificateOptions } from '../certificates/client-certificate';
+import type { CertificateRegistry } from '../certificates/registry.js';
+import { assertAllowedHttpsOrigin, clearClientCertificateOptions, createClientCertificateOptions, type ClientCertificateOptions } from '../certificates/client-certificate.js';
 
 type ProbeContext = { newPage(): Promise<{ goto(url: string): Promise<unknown> }>; close(): Promise<void> };
 type ProbeBrowser = { newContext(options: ClientCertificateOptions): Promise<ProbeContext>; close(): Promise<void> };

@@ -3,9 +3,9 @@ import {
   type AgentJobEvent, type AgentJobTerminal,
 } from '@lazybot/contracts';
 import { z } from 'zod';
-import type { AgentConfig } from '../config';
-import type { AgentJob } from '../adapters/portal-adapter';
-import type { AgentApi } from '../runtime/agent';
+import type { AgentConfig } from '../config.js';
+import type { AgentJob } from '../adapters/portal-adapter.js';
+import type { AgentApi } from '../runtime/agent.js';
 
 const claimedJob = z.object({
   itemId: z.uuid(), batchId: z.uuid(), state: z.literal('authenticating'),

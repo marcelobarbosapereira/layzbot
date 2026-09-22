@@ -1,4 +1,4 @@
-import type { PortalAdapter } from './portal-adapter';
+import type { PortalAdapter } from './portal-adapter.js';
 
 /** Exercises the executor protocol without opening a browser or contacting a fiscal portal. */
 export class SimulatedAdapter implements PortalAdapter {

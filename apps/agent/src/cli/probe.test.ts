@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runPortalOriginProbe, runProbeCli } from './probe';
+import { runPortalOriginProbe, runProbeCli } from './probe.js';
 
 const certificate = { id: 'c', responsibleId: 'r', subject: 'CN=Fictitious', fingerprint: 'f'.repeat(64), expiresAt: '2099-01-01T00:00:00.000Z', pfxFile: 'c.pfx', pfx: new Uint8Array([1, 2]), passphrase: 'fabricated-passphrase' };
 

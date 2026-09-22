@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { chmod, mkdir, readFile, writeFile, copyFile } from 'node:fs/promises';
 import { join, basename } from 'node:path';
 import { spawn } from 'node:child_process';
-import type { SecretProvider } from '../secrets/provider';
+import type { SecretProvider } from '../secrets/provider.js';
 
 export type PfxInspection = { subject: string; expiresAt: string };
 export type PfxInspector = (path: string, passphrase: string) => Promise<PfxInspection>;
