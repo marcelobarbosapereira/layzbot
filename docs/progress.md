@@ -193,3 +193,18 @@
 - Calculation parsing returns integer `totalDueCents` and a SHA-256 `summaryFingerprint` containing the immutable taxpayer/competence/activity/revenue snapshot and portal total. No submit, portal transmission, certificate, document download, or Supabase mutation is included.
 - Verification: agent tests 55 passed / 1 environmental skip; agent typecheck and build passed; `git diff --check` passed. Real PGDAS interaction was not attempted.
 - Next incomplete plan task: Task 17 — existing declaration detection and idempotent submission guard.
+
+## 2026-09-22 — PGDAS automation plan, Task 17
+
+- Added a fixture-only submission guard that reconciles remote declaration state before every attempt. Matching
+  transmitted declarations advance as `alreadySubmitted`; conflicting, unknown, or unreadable state stops with
+  `needsAttention` and never clicks.
+- The guard requires the immutable confirmation ID and exact calculated summary fingerprint, re-reads both visible
+  summary values immediately before the single submit click, and persists a unique `submission_started` attempt ID
+  before that click.
+- Connection loss or an ambiguous response triggers one remote reconciliation and never an automatic second click.
+  A local `calculated` item is therefore safe to resume when the remote declaration is already transmitted.
+- Verification: focused PGDAS submission/idempotency suite 69 passed / 1 environmental skip. Full agent tests,
+  lint, typecheck, build, and `git diff --check` are required before the task commit. Only sanitized local fixtures
+  were used; no portal, certificate, taxpayer, Supabase mutation, or fiscal transmission occurred.
+- Next incomplete plan task: Task 18 — DAS and receipt validation, storage, and local mirror.
