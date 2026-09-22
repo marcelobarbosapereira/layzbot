@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import { agentEnrollment, agentHeartbeat, deviceHeartbeatStatus, type AgentEnrollment, type AgentHeartbeat, type DeviceHeartbeatStatus } from '@lazybot/contracts';
 import { createClient } from './supabase/server';
+import { createServiceClient } from './supabase/service';
 
 export type DevicePrincipal = { id: string; ownerId: string; name: string };
 
@@ -36,7 +37,9 @@ export async function authenticateDevice(request: Request): Promise<DevicePrinci
   const id = tokenId(raw);
   if (!id) throw new DeviceAuthError('DEVICE_UNAUTHORIZED');
   const tokenHash = await hashDeviceToken(raw);
-  const supabase = await createClient();
+  // Device routes authenticate the explicit Bearer token, not the browser cookie.
+  // The service client is used only to call the narrowly scoped candidate RPC.
+  const supabase = createServiceClient();
   const { data, error } = await supabase.rpc('get_device_auth_candidate', { p_device_id: id, p_token_hash: tokenHash });
   const candidate = Array.isArray(data) ? data[0] : null;
   if (error || !candidate || !matchesHash(tokenHash, candidate.token_hash)) throw new DeviceAuthError('DEVICE_UNAUTHORIZED');

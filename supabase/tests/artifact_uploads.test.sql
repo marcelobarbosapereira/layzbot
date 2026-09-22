@@ -1,0 +1,10 @@
+begin;
+select plan(6);
+select has_table('public', 'artifact_uploads', 'signed artifact uploads are persisted server-side');
+select has_function('public', 'register_artifact_upload', array['uuid','uuid','text','text','text','text','bigint','text'], 'upload registration RPC exists');
+select has_function('public', 'complete_artifact_upload', array['uuid','text','text','text','bigint','text'], 'completion RPC exists');
+select is((select public from storage.buckets where id='fiscal-documents'), false, 'fiscal documents bucket remains private');
+select has_column('public', 'artifact_uploads', 'upload_token_hash', 'only a token hash is persisted');
+select has_column('public', 'artifact_uploads', 'consumed_at', 'completion is one-use');
+select * from finish();
+rollback;

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { buildArtifactFileName, buildArtifactPath, resolveArtifactPath } from './naming.js';
 
-const input = { responsible: 'Escritório Ágil/01', year: 2026, competence: '09-2026', company: 'Acme: Comércio *', document: '12345678000199', kind: 'das' as const };
+const input = { ownerId: '10000000-0000-4000-8000-000000000001', responsible: 'Escritório Ágil/01', year: 2026, competence: '09-2026', company: 'Acme: Comércio *', document: '12345678000199', kind: 'das' as const };
 describe('artifact naming', () => {
   it('normalizes invalid separators and keeps deterministic hierarchy', () => {
     const path = buildArtifactPath(input);
-    expect(path).toBe('Escritorio Agil-01/simples-nacional/2026/09-2026/Acme- Comercio -/2026-09_DAS_Acme- Comercio -_12345678000199.pdf');
+    expect(path).toBe('10000000-0000-4000-8000-000000000001/Escritorio Agil-01/simples-nacional/2026/09-2026/Acme- Comercio -/2026-09_DAS_Acme- Comercio -_12345678000199.pdf');
   });
   it('supports masked document names and caps long segments', () => {
     const name = buildArtifactFileName({ ...input, maskDocument: true, company: 'á'.repeat(200) });

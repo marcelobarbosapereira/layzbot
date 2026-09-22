@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 
 export type ArtifactKind = 'das' | 'receipt';
 export type ArtifactNamingInput = {
+  ownerId: string;
   responsible: string;
   year: number;
   competence: string;
@@ -39,7 +40,7 @@ export function buildArtifactPath(input: ArtifactNamingInput): string {
   const competence = normalizeSegment(input.competence);
   const responsible = normalizeSegment(input.responsible);
   const company = normalizeSegment(input.company);
-  return `${responsible}/simples-nacional/${year}/${competence}/${company}/${buildArtifactFileName(input)}`;
+  return `${input.ownerId}/${responsible}/simples-nacional/${year}/${competence}/${company}/${buildArtifactFileName(input)}`;
 }
 
 export function sha256(content: Uint8Array): string {
