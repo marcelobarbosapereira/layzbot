@@ -40,7 +40,10 @@ export class PgdasAssessmentPage {
       let matched = 0;
       for (let index = 0; index < await competenceOptions.count(); index += 1) {
         const candidate = competenceOptions.nth(index);
-        if ((await candidate.innerText()).trim() === snapshot.competence) { matched += 1; if (await candidate.isVisible()) await candidate.click(); }
+        if ((await candidate.innerText()).trim() === snapshot.competence && await candidate.isVisible() && await candidate.isEnabled()) {
+          matched += 1;
+          await candidate.click();
+        }
       }
       if (matched !== 1) return { status: 'needs_attention', reason: 'COMPETENCE_MISMATCH' };
     } else {
@@ -91,6 +94,9 @@ export class PgdasAssessmentPage {
     const summary = await this.readSummary();
     const total = this.page.locator('[data-total-due-cents], [data-total-due], [data-testid="total-due"]');
     if (!summary || await total.count() !== 1) return null;
+    const mapping = mapActivity(snapshot.activity);
+    if (summary.competence !== snapshot.competence || mapping.status !== 'matched' ||
+        !activityOptionMatches(mapping.mapping, summary.activity) || summary.revenueCents !== snapshot.revenueCents) return null;
     const totalText = await this.readValue(total);
     const totalDueCents = total.getAttribute ? Number(await total.getAttribute('data-total-due-cents')) : Number.NaN;
     const parsed = Number.isSafeInteger(totalDueCents) ? totalDueCents : parseCents(totalText);

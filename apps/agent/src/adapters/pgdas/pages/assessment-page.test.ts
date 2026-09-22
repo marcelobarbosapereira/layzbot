@@ -45,4 +45,32 @@ describe('PGDAS assessment page', () => {
     await expect(new PgdasAssessmentPage(page).fill({ competence: '09/2026', revenueCents: 1, activity: 'commerce', taxpayerId: 't' })).resolves.toEqual({ status: 'needs_attention', reason: 'COMPETENCE_MISMATCH' });
     await page.close();
   });
+
+  it('accepts zero revenue as an exact integer boundary', async (ctx) => {
+    if (!browser) return ctx.skip();
+    const page = await browser.newPage();
+    await page.setContent(`<input data-competence-input value="09/2026" /><button data-activity-option>Comércio</button><input data-revenue-input />
+      <span data-summary-competence>09/2026</span><span data-summary-activity>Comércio</span><span data-summary-revenue-cents="0">R$ 0,00</span>`);
+    await expect(new PgdasAssessmentPage(page).fill({ competence: '09/2026', revenueCents: 0, activity: 'commerce', taxpayerId: 't' })).resolves.toEqual({
+      status: 'filled', snapshot: { competence: '09/2026', revenueCents: 0, activity: 'commerce', taxpayerId: 't' },
+    });
+    await page.close();
+  });
+
+  it('does not use a hidden competence option or stale summary', async (ctx) => {
+    if (!browser) return ctx.skip();
+    const page = await browser.newPage();
+    await page.setContent(`<button data-competence-option style="display:none">09/2026</button>
+      <span data-summary-competence>09/2026</span><span data-summary-activity>Comércio</span><span data-summary-revenue-cents="0">R$ 0,00</span>`);
+    await expect(new PgdasAssessmentPage(page).fill({ competence: '09/2026', revenueCents: 0, activity: 'commerce', taxpayerId: 't' })).resolves.toEqual({ status: 'needs_attention', reason: 'COMPETENCE_MISMATCH' });
+    await page.close();
+  });
+
+  it('does not fingerprint a summary that changed after fill', async (ctx) => {
+    if (!browser) return ctx.skip();
+    const page = await browser.newPage();
+    await page.setContent(`<span data-summary-competence>09/2026</span><span data-summary-activity>Comércio</span><span data-summary-revenue-cents="999">R$ 9,99</span><output data-total-due-cents="100">R$ 1,00</output>`);
+    await expect(new PgdasAssessmentPage(page).calculated({ competence: '09/2026', revenueCents: 0, activity: 'commerce', taxpayerId: 't' })).resolves.toBeNull();
+    await page.close();
+  });
 });
