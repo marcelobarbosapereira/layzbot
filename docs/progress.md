@@ -153,6 +153,7 @@
 - Task 13 review fixes round 3 compile the shared contracts to standalone NodeNext JavaScript in each package, add a clean Windows launcher smoke test (skipped where PowerShell packaging is unavailable), and align Arch instructions with the default `apps/agent/dist/package-arch` output. No platform installation claim was added.
 - Task 13 review fixes round 3 completed the standalone contract compilation through temporary staging, with the package launcher smoke test executing successfully and the expected invalid-command response. No platform installation claim was added.
 - Task 13 final review fixes include the Node `playwright` runtime package, real `probe` CLI dispatcher wiring with regression coverage, and active-execution heartbeats in the agent runtime with ordered lease events. No platform installation claim was added.
+- Task 13 final review fix round 2 adds `playwright-core` and configures `PLAYWRIGHT_BROWSERS_PATH` to the packaged browser cache in both launchers. No platform installation claim was added.
 
 ## 2026-09-21 — checkpoint before Plan 3 Task 10
 

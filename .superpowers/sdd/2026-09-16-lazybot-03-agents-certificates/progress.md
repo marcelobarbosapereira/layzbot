@@ -39,3 +39,5 @@ Task 13 review fixes round 3: changed production imports to NodeNext-compatible 
 Task 13 review fixes round 3 completed: package scripts stage contracts temporarily with `.js` specifiers and compile them as NodeNext ESM, preserving the web source's extensionless imports. The clean Windows package launcher smoke test returned `INVALID_ARGUMENTS` as expected; agent 28/29 (1 skip), workspace tests, lint, typecheck, build and diff-check passed.
 
 Task 13 final review fixes: packages include the `playwright` Node package in addition to the optional browser cache; `main.ts` dispatches `probe` through the real certificate/TLS probe and has a CLI regression; `AgentRuntime` heartbeats periodically during active execution while preserving lease-event ordering and abort interruption. Full verification passed; commit follow-up pending.
+
+Task 13 final review fix round 2: packaged `playwright-core` alongside `playwright` on Windows/Arch and set `PLAYWRIGHT_BROWSERS_PATH` in both launchers. Smoke, full tests, lint, typecheck, build and diff-check passed; commit follow-up pending.

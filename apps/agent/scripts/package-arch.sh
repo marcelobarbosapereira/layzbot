@@ -6,6 +6,7 @@ mkdir -p "$output/config" "$output/data" "$output/dist" "$output/node_modules/@l
 if [[ -d "$root/apps/agent/dist" ]]; then cp -R "$root/apps/agent/dist/." "$output/dist/"; fi
 cp -R "$root/apps/agent/node_modules/zod" "$output/node_modules/zod"
 cp -R "$root/apps/agent/node_modules/playwright" "$output/node_modules/playwright"
+cp -R "$root"/node_modules/.pnpm/playwright-core*/node_modules/playwright-core "$output/node_modules/playwright-core"
 contract_stage="$(mktemp -d)"
 cp -R "$root/packages/contracts/src/." "$contract_stage/"
 printf '%s\n' '{"type":"module"}' > "$contract_stage/package.json"
@@ -20,6 +21,7 @@ cat > "$output/lazybot-agent" <<'LAZYBOT_LAUNCHER'
 #!/usr/bin/env bash
 set -euo pipefail
 script_dir="$(cd "$(dirname "$0")" && pwd)"
+export PLAYWRIGHT_BROWSERS_PATH="$script_dir/playwright"
 exec node --experimental-specifier-resolution=node "$script_dir/dist/src/cli/main.js" "$@"
 LAZYBOT_LAUNCHER
 chmod 0700 "$output/lazybot-agent"

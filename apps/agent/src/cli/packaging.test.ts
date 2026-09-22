@@ -24,9 +24,13 @@ describe('packaging launch boundaries', () => {
     const windows = await readFile(join(root, 'scripts', 'package-windows.ps1'), 'utf8');
     const arch = await readFile(join(root, 'scripts', 'package-arch.sh'), 'utf8');
     expect(windows).toContain('node_modules\\zod');
+    expect(windows).toContain('node_modules\\playwright-core');
+    expect(windows).toContain('PLAYWRIGHT_BROWSERS_PATH=%~dp0playwright');
     expect(windows).toContain('Encoding Unicode');
     expect(arch).toContain('node_modules/zod');
     expect(arch).toContain('node_modules/@lazybot/contracts/dist');
+    expect(arch).toContain('node_modules/playwright-core');
+    expect(arch).toContain('PLAYWRIGHT_BROWSERS_PATH="$script_dir/playwright"');
   });
 
   it.skipIf(process.platform !== 'win32')('executes the packaged launcher from its clean output directory', async () => {
