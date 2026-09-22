@@ -19,19 +19,46 @@ describe('PgdasAdapter fixture portal', () => {
   it('walks to the confirmation boundary without transmitting', async () => {
     const url = await server.start();
     const methods: string[] = [];
+    const trace: string[] = [];
     const fetcher: typeof fetch = async (input, init) => {
       methods.push(init?.method ?? 'GET');
+      trace.push(`GET:${String(input).split('/').pop()}`);
       return fetch(input, init);
     };
     const states: string[] = [];
     const adapter = new PgdasAdapter({ baseUrl: url, fetcher });
     await adapter.execute(job, {
       transition: async () => undefined,
-      checkpoint: async (state) => { states.push(state); },
+      checkpoint: async (state, message) => { states.push(state); trace.push(`EVENT:${state}:${message}`); },
     } as PgdasReporter, new AbortController().signal);
     expect(adapter.lastState).toBe('calculated');
-    expect(states).toEqual(['profile_selected', 'profile_selected', 'assessment_filled', 'assessment_filled', 'assessment_filled', 'calculated', 'calculated']);
+    expect(states).toEqual([
+      'authenticating', 'profile_selected', 'profile_selected', 'profile_selected',
+      'profile_selected', 'assessment_filled', 'assessment_filled', 'assessment_filled',
+      'assessment_filled', 'assessment_filled', 'assessment_filled', 'calculated', 'calculated', 'calculated',
+    ]);
     expect(methods.every((method) => method === 'GET')).toBe(true);
+    expect(trace[0]).toBe('EVENT:authenticating:Reading fixture certificate-accepted');
+    expect(trace[1]).toBe('GET:certificate-accepted.html');
+    expect(trace.some((entry) => entry.startsWith('EVENT:') && entry.includes('Reading fixture confirmation'))).toBe(true);
+  });
+
+  it.each([
+    ['captcha', 'PGDAS_CAPTCHA'],
+    ['maintenance', 'PGDAS_MAINTENANCE'],
+    ['missing-authorization', 'PGDAS_AUTHORIZATION_MISSING'],
+  ])('stops safely on %s fixture', async (fixture, errorCode) => {
+    const url = await server.start();
+    const events: string[] = [];
+    const fetcher: typeof fetch = async (input, init) => {
+      const target = String(input).replace('/certificate-accepted.html', `/${fixture}.html`);
+      return fetch(target, init);
+    };
+    await expect(new PgdasAdapter({ baseUrl: url, fetcher }).execute(job, {
+      transition: async () => undefined,
+      checkpoint: async (state, message) => { events.push(`${state}:${message}`); },
+    } as PgdasReporter, new AbortController().signal)).rejects.toThrow(errorCode);
+    expect(events[0]).toBe('authenticating:Reading fixture certificate-accepted');
   });
 
   it('requires the immutable confirmation snapshot', async () => {

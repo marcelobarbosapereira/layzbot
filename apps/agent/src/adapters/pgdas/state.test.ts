@@ -23,6 +23,8 @@ describe('PGDAS state machine', () => {
     expect(isRetryable('interrupted')).toBe(true);
     expect(isRetryable('failed')).toBe(true);
     expect(isRetryable('submitted')).toBe(false);
+    expect(transition('failed', 'authenticating')).toBe('authenticating');
+    expect(transition('interrupted', 'authenticating')).toBe('authenticating');
   });
 
   it('requires an immutable confirmed snapshot before transmission', () => {

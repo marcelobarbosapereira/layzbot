@@ -168,3 +168,9 @@
 - Added sanitized HTML fixtures for success, receipt/DAS placeholders, CAPTCHA, missing authorization, and maintenance outcomes, plus tests proving the state rules and read-only adapter behavior.
 - Verification: focused PGDAS tests 36 passed / 1 skipped; agent typecheck and build passed; `git diff --check` passed. No Supabase mutation, portal access, fiscal transmission, or push occurred.
 - Next incomplete plan task: Task 15 — authentication, identity, and representative selection page objects.
+
+### Task 14 review fixes
+
+- Every fixture GET now has a preceding checkpoint event carrying the current state and read intent; regression coverage proves event-before-GET ordering.
+- Adapter tests cover CAPTCHA, maintenance, and missing authorization, all stopping before any external side effect.
+- `failed` and `interrupted` have an explicit `-> authenticating` re-entry transition, so retryability cannot silently dead-end at a terminal state.

@@ -19,8 +19,9 @@ const transitions: Record<PgdasState, readonly PgdasState[]> = {
   das_downloaded: ['completed', 'needs_attention', 'failed', 'interrupted'],
   completed: [],
   needs_attention: [],
-  failed: [],
-  interrupted: [],
+  // Re-entry is explicit: callers must persist this transition before retrying.
+  failed: ['authenticating'],
+  interrupted: ['authenticating'],
 };
 
 export function transition(from: PgdasState, to: PgdasState): PgdasState {

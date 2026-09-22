@@ -49,12 +49,14 @@ export class PgdasAdapter implements PortalAdapter {
     });
     for (const [page, from, to, message] of pages) {
       this.throwIfAborted(signal);
+      await pgdasReporter.checkpoint?.(this.state, `Reading fixture ${page}`);
       const html = await this.readFixture(page, signal);
       this.assertHealthyFixture(page, html);
       if (to) this.move(from, to);
       await pgdasReporter.checkpoint?.(this.state, message);
     }
     this.throwIfAborted(signal);
+    await pgdasReporter.checkpoint?.(this.state, 'Reading fixture confirmation');
     const confirmation = await this.readFixture('confirmation', signal);
     this.assertHealthyFixture('confirmation', confirmation);
     await pgdasReporter.checkpoint?.('calculated', 'Aguardando revisão antes da transmissão');
