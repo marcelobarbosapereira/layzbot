@@ -208,3 +208,9 @@
   lint, typecheck, build, and `git diff --check` are required before the task commit. Only sanitized local fixtures
   were used; no portal, certificate, taxpayer, Supabase mutation, or fiscal transmission occurred.
 - Next incomplete plan task: Task 18 — DAS and receipt validation, storage, and local mirror.
+
+## 2026-09-22 — PGDAS automation plan, Task 18
+
+- Added fixture-only PDF validation, deterministic DAS/receipt naming, SHA-256 conflict/version resolution, and Playwright download capture in a restricted temporary directory.
+- Added signed-upload/completion helpers, authenticated agent upload/complete route contracts, and atomic local mirror support. Server completion re-downloads the private object and verifies size/hash before inserting the artifact row.
+- Verification checkpoint: document naming and PDF validation suite passes; full lint/typecheck/build and route verification remain before the task commit. No production Storage, real taxpayer data, portal, certificate, or fiscal transmission was used.
