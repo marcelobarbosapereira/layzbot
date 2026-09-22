@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public;
-select plan(8);
+select plan(9);
 select has_table('public', 'owner_log_settings', 'owners have retention settings');
 select has_column('public', 'owner_log_settings', 'technical_log_retention_days', 'retention is configurable');
 select has_table('public', 'technical_logs', 'technical logs are separate from fiscal audit events');
