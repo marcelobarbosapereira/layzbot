@@ -22,3 +22,9 @@ checklist and evidence rules are recorded in `docs/runbooks/pgdas-homologation.m
 - Secret scan for new Task 15 files: clean.
 - `git diff --check`: passed.
 - No portal access, certificate use, Supabase mutation, deployment, push, or fiscal transmission.
+
+## Review correction
+
+- Certificate, taxpayer profile, and selection button locators now reject any count other than exactly one before interaction.
+- Certificate identity also compares the expected responsible document, and profile validation reads the visible document locator rather than trusting an attribute alone.
+- Regression coverage includes duplicate certificates/profiles/buttons and a visually divergent taxpayer document.

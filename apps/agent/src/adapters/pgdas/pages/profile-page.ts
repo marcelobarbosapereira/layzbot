@@ -13,13 +13,15 @@ export class PgdasProfilePage {
   async select(snapshot: TaxpayerSnapshot): Promise<ProfileResult> {
     const reason = await this.attentionReason();
     if (reason) return { status: 'needs_attention', reason };
-    const profile = this.page.locator(`[data-taxpayer-profile][data-taxpayer-id="${escapeAttribute(snapshot.id)}"]`).first();
+    const profile = this.page.locator(`[data-taxpayer-profile][data-taxpayer-id="${escapeAttribute(snapshot.id)}"]`);
     if (await profile.count() !== 1) return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
-    const displayed = await profile.getAttribute('data-taxpayer-document');
-    if (!displayed || normalizeDocument(displayed) !== normalizeDocument(snapshot.document)) {
+    const documentLocator = profile.locator('[data-taxpayer-document], [data-document], [aria-label*="document" i], [aria-label*="CNPJ" i], [aria-label*="CPF" i]');
+    if (await documentLocator.count() !== 1) return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
+    const displayed = await documentLocator.innerText();
+    if (normalizeDocument(displayed) !== normalizeDocument(snapshot.document)) {
       return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
     }
-    const select = profile.getByRole('button', { name: /selecionar|acessar|representar/i }).first();
+    const select = profile.getByRole('button', { name: /selecionar|acessar|representar/i });
     if (await select.count() !== 1) return { status: 'needs_attention', reason: 'AUTHORIZATION_MISSING' };
     await select.click();
     return { status: 'verified', taxpayerId: snapshot.id };

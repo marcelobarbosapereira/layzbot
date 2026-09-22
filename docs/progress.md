@@ -184,3 +184,4 @@
 - Added a non-transmitting real-origin homologation checklist. The preflight is unavailable on this host and was not attempted; no portal, real certificate, fiscal transmission, or remote mutation was used.
 - Verification: focused suite 46 passed / 1 environmental skip; workspace 129 passed; lint, typecheck, build, secret scan, and `git diff --check` passed.
 - Next incomplete plan task: Task 16 — competence, one-activity revenue, and calculation.
+- Review correction: login/profile/button locators now require exactly one match, certificate authentication checks the expected responsible document, and profile validation reads the visible document locator. Duplicate locator and visual mismatch regressions pass.

@@ -26,14 +26,16 @@ export class PgdasLoginPage {
     const reason = await this.attentionReason();
     if (reason) return { status: 'needs_attention', reason };
 
-    const certificate = this.page.locator('[data-certificate]').first();
+    const certificate = this.page.locator('[data-certificate]');
     if (await certificate.count() !== 1) return { status: 'needs_attention', reason: 'UNEXPECTED_CERTIFICATE' };
     const responsibleId = await certificate.getAttribute('data-responsible-id');
     const subject = await certificate.getAttribute('data-subject');
     const fingerprint = await certificate.getAttribute('data-fingerprint');
+    const document = await certificate.getAttribute('data-responsible-document');
     const matches = responsibleId === expected.id
       && (!expected.subject || normalize(subject) === normalize(expected.subject))
-      && (!expected.fingerprint || normalize(fingerprint) === normalize(expected.fingerprint));
+      && (!expected.fingerprint || normalize(fingerprint) === normalize(expected.fingerprint))
+      && (!expected.document || normalizeDocument(document) === normalizeDocument(expected.document));
     if (!matches || !subject) return { status: 'needs_attention', reason: 'UNEXPECTED_CERTIFICATE' };
     return { status: 'verified', responsibleId: expected.id, certificateSubject: subject };
   }
@@ -47,3 +49,4 @@ export class PgdasLoginPage {
 }
 
 function normalize(value: string | null | undefined): string { return (value ?? '').trim().replace(/\s+/g, ' ').toLocaleLowerCase(); }
+function normalizeDocument(value: string | null | undefined): string { return (value ?? '').replace(/\D/g, ''); }
