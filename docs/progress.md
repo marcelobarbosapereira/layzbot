@@ -223,3 +223,8 @@
 - Added per-owner technical-log retention settings and a security-definer cleanup function. Expired technical logs and sanitized error screenshots are removable; fiscal DAS, receipts, reports, and append-only execution events are preserved.
 - Added a deterministic Playwright fixture flow covering import, competence, mixed outcomes, interruption/resume, and sanitized document/report evidence.
 - Added incident recovery guidance and Windows/Arch verification records. Windows/Arch portal, certificate, Supabase CLI/Docker, and real fiscal checks remain unavailable here and are explicitly not claimed.
+
+## 2026-09-22 — Database scope clarification
+
+- The application database is the hosted Supabase project `wfkvddqecvkxffdeikyw`; local PostgreSQL/Docker is not part of the runtime or acceptance environment.
+- Local `supabase test db`/`db reset` failures are therefore environment notes only. Database verification must use rollback-only SQL against the hosted project, with fabricated identities/data and no persistent migration or fiscal operation.
