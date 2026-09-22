@@ -224,6 +224,11 @@
 - Added a deterministic Playwright fixture flow covering import, competence, mixed outcomes, interruption/resume, and sanitized document/report evidence.
 - Added incident recovery guidance and Windows/Arch verification records. Windows/Arch portal, certificate, Supabase CLI/Docker, and real fiscal checks remain unavailable here and are explicitly not claimed.
 
+### Implementation status and remaining acceptance gates
+
+- PGDAS implementation tasks 14–19 are complete and committed; there is no Task 20 in the approved plan.
+- Remaining items are operational acceptance gates, not pending code tasks: execute rollback-only SQL against the hosted Supabase project, perform the accompanied non-production Windows/Arch checks when those environments are available, and manually reconcile any real transmission only with explicit authorization. No real fiscal transmission is performed by the automated development workflow.
+
 ## 2026-09-22 — Database scope clarification
 
 - The application database is the hosted Supabase project `wfkvddqecvkxffdeikyw`; local PostgreSQL/Docker is not part of the runtime or acceptance environment.
