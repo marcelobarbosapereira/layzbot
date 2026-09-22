@@ -29,3 +29,5 @@ Task 13: complete. Added injectable one-time enrollment exchange, secret-backed 
 Verification: RED observed for the absent enrollment boundary; enrollment-focused tests 2/2; complete agent suite 25 passed / 1 skipped; agent typecheck/build and workspace tests, lint, typecheck, build, secret scan, and `git diff --check` passed. Windows/Arch installation and enrollment are unavailable on this host and are not claimed. No hosted mutation, real token/certificate, fiscal effect, or push was used.
 
 Next task: Plan 3 completion gate review; no further implementation task remains in the plan.
+
+Task 13 review fixes: corrected Windows packaging root, added matching Windows/POSIX launchers, made enrollment token prompts non-echoing, and ensured packaged Task Scheduler XML is UTF-16 with BOM. Agent/workspace tests, lint, typecheck, build, secret scan, and diff-check passed; commit follow-up pending.

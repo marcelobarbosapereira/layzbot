@@ -10,11 +10,33 @@ import { createDefaultAgentDataDir, runAgent } from './run';
 const dataDir = createDefaultAgentDataDir();
 const secrets = process.platform === 'win32' ? createWindowsDpapiProvider() : createLinuxSecretServiceProvider();
 
+export async function askHidden(question: string): Promise<string> {
+  output.write(question);
+  if (!input.isTTY || typeof input.setRawMode !== 'function') {
+    const chunks: Buffer[] = [];
+    for await (const chunk of input) chunks.push(Buffer.from(chunk));
+    output.write('\n');
+    return Buffer.concat(chunks).toString('utf8').trim();
+  }
+  return new Promise((resolve, reject) => {
+    let value = '';
+    const onData = (chunk: Buffer) => {
+      for (const char of chunk.toString('utf8')) {
+        if (char === '\u0003') { input.setRawMode?.(false); input.pause(); reject(new Error('ENROLLMENT_CANCELLED')); return; }
+        if (char === '\r' || char === '\n') { input.setRawMode?.(false); input.pause(); input.off('data', onData); output.write('\n'); resolve(value); return; }
+        if (char === '\u007f') { value = value.slice(0, -1); continue; }
+        value += char;
+      }
+    };
+    input.setRawMode(true); input.resume(); input.on('data', onData);
+  });
+}
+
 async function promptEnroll(): Promise<void> {
   const rl = createInterface({ input, output });
   try {
     const result = await enroll({ dataDir, secrets, prompts: {
-      ask: (question) => rl.question(question), askSecret: (question) => rl.question(question),
+      ask: (question) => rl.question(question), askSecret: askHidden,
     } });
     output.write(`Enrolled device ${result.deviceId}. Keep this terminal private.\n`);
   } finally { rl.close(); }

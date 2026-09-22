@@ -148,6 +148,7 @@
 - Task 10 added the cross-platform executor runtime, typed HTTP client, configuration validation, lease-aware heartbeat/claim loop, and simulated adapter. Task 11 added injectable Windows DPAPI/Linux Secret Service providers and a user-only certificate registry. Task 12 added disposable mTLS fixtures, Playwright PFX options, zeroization, and an allowlisted TLS probe. These tasks have no real fiscal or certificate effects.
 - Task 13 added secure injectable enrollment and run commands, platform packaging scripts/artifacts, and [agent installation instructions](agent-installation.md). Enrollment exchanges a one-time token once, stores only the returned device token through `SecretProvider`, and excludes credentials from `agent.json`, logs, and command arguments.
 - Task 13 verification: agent tests 25 passed / 1 skipped, workspace tests passed, lint/typecheck/build passed, secret scan and `git diff --check` passed. Windows/Arch installation and enrollment are unavailable on this host; no platform success claim is made.
+- Task 13 review fixes corrected Windows root traversal, added package launchers consistent with the scheduler/systemd artifacts, hid enrollment-token input, and converted the packaged Windows XML to UTF-16 with BOM. A package smoke check confirmed the launcher and `FF FE` BOM; no platform installation claim was added.
 
 ## 2026-09-21 — checkpoint before Plan 3 Task 10
 

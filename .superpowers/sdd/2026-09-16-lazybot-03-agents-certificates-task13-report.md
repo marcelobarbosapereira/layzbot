@@ -16,3 +16,10 @@ Implemented injectable enrollment and run boundaries, secure user-scoped token s
 - Scheduler/systemd artifacts start only the agent runtime; job creation and fiscal submission remain manual web-confirmed operations.
 
 No real enrollment token, device token, certificate, hosted database mutation, fiscal document, or push was used.
+
+## Review fixes
+
+- Corrected the Windows package root traversal and added executable `lazybot-agent.cmd`/`lazybot-agent` launchers matching the XML and systemd unit.
+- Enrollment prompts now collect the one-time token without terminal echo; piped input also avoids echoing it.
+- The Windows packaging step converts the scheduler XML to UTF-16 with BOM in a temporary file before replacing the payload. The source remains UTF-8 so it is portable in Git.
+- Re-ran the Windows package script: launcher was present and the output XML BOM was `FF FE`.
