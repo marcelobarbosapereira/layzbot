@@ -1,0 +1,14 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+set local search_path = extensions, public;
+select plan(8);
+select has_table('public', 'owner_log_settings', 'owners have retention settings');
+select has_column('public', 'owner_log_settings', 'technical_log_retention_days', 'retention is configurable');
+select has_table('public', 'technical_logs', 'technical logs are separate from fiscal audit events');
+select has_function('public', 'cleanup_expired_technical_logs', array['uuid','timestamptz'], 'cleanup function exists');
+select has_column('public', 'artifacts', 'kind', 'artifacts retain fiscal kinds');
+select ok((select position('das' in pg_get_functiondef(p.oid)) > 0 from pg_proc p where p.proname = 'cleanup_expired_technical_logs' limit 1), 'cleanup function protects DAS');
+select ok((select position('receipt' in pg_get_functiondef(p.oid)) > 0 from pg_proc p where p.proname = 'cleanup_expired_technical_logs' limit 1), 'cleanup function protects receipts');
+select ok((select position('batch_item_events' in pg_get_functiondef(p.oid)) = 0 from pg_proc p where p.proname = 'cleanup_expired_technical_logs' limit 1), 'cleanup does not delete append-only audit events');
+select * from finish();
+rollback;

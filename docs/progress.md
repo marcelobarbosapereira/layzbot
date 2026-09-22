@@ -215,3 +215,11 @@
 - Added signed-upload/completion helpers, authenticated agent upload/complete route contracts, and atomic local mirror support. Server completion re-downloads the private object and verifies size/hash before inserting the artifact row.
 - Verification checkpoint: document naming and PDF validation suite passes; full lint/typecheck/build and route verification remain before the task commit. No production Storage, real taxpayer data, portal, certificate, or fiscal transmission was used.
 - Review hardening: both routes now authenticate the device Bearer token, use the private `fiscal-documents` bucket, bind a one-use signed token to the device/item owner through `artifact_uploads` RPCs, and verify the downloaded object before completion. The local mirror rejects POSIX/Windows traversal and removes temporary files after failed writes. Completion returns only sanitized metadata and never extracted fiscal text.
+
+## 2026-09-22 — PGDAS automation plan, Task 19
+
+- Added bounded exponential retry for explicitly transient reads. CAPTCHA, authorization, identity/activity mismatch, ambiguous submission, and unknown remote state never retry; failures remain isolated per batch item.
+- Added the operational batch report with terminal-state gating, per-company last safe state/action, retry eligibility, and DAS/receipt links. A batch cannot be labelled complete while any item is nonterminal.
+- Added per-owner technical-log retention settings and a security-definer cleanup function. Expired technical logs and sanitized error screenshots are removable; fiscal DAS, receipts, reports, and append-only execution events are preserved.
+- Added a deterministic Playwright fixture flow covering import, competence, mixed outcomes, interruption/resume, and sanitized document/report evidence.
+- Added incident recovery guidance and Windows/Arch verification records. Windows/Arch portal, certificate, Supabase CLI/Docker, and real fiscal checks remain unavailable here and are explicitly not claimed.
