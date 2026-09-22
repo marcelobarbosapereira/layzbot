@@ -229,6 +229,12 @@
 - PGDAS implementation tasks 14–19 are complete and committed; there is no Task 20 in the approved plan.
 - Remaining items are operational acceptance gates, not pending code tasks: execute rollback-only SQL against the hosted Supabase project, perform the accompanied non-production Windows/Arch checks when those environments are available, and manually reconcile any real transmission only with explicit authorization. No real fiscal transmission is performed by the automated development workflow.
 
+### Hosted Supabase migration gate — completed
+
+- With explicit authorization, migrations `202609160001` through `202609160009` were applied in order to the hosted project `wfkvddqecvkxffdeikyw` through its SQL Editor.
+- Post-apply read-only verification returned: `public_tables=16`, `fiscal_bucket=true`, `rls_tables=16`, `confirm_batch=true`, and `cleanup_expired_technical_logs=true`.
+- No fabricated taxpayer rows, credentials, or fiscal transmission were created. Windows/Arch execution evidence and any real accompanied transmission remain separate gates.
+
 ## 2026-09-22 — Database scope clarification
 
 - The application database is the hosted Supabase project `wfkvddqecvkxffdeikyw`; local PostgreSQL/Docker is not part of the runtime or acceptance environment.
